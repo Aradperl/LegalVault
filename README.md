@@ -6,7 +6,6 @@
 
 ## 📸 See it in action
 
-*Add your screenshots to the `screenshots/` folder so they appear below. No need to run the app—HR and recruiters can see the product at a glance.*
 
 | [Home](#home) | [Contracts](#contracts-page) | [Analytics](#analytics-page) |
 |---------------|------------------------------|------------------------------|
