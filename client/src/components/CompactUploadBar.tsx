@@ -68,7 +68,7 @@ export function CompactUploadBar({ loading, onUpload, onFileDrop }: CompactUploa
         <div style={{ ...S.iconCircle, width: 44, height: 44, fontSize: 20, marginBottom: 0 }}>
           {loading ? '⚙️' : '📄'}
         </div>
-        <Body1 weight="semibold" style={{ fontSize: 15 }}>{labelText}</Body1>
+        <Body1 style={{ fontSize: 15, fontWeight: 600 }}>{labelText}</Body1>
       </label>
     </Card>
   );

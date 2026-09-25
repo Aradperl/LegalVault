@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Card, Subtitle1, Body1, Button, Input, Label, Dialog, DialogTrigger, DialogSurface, DialogTitle, DialogBody, DialogActions } from '@fluentui/react-components';
+import { Subtitle1, Body1, Button, Input, Label, Dialog, DialogTrigger, DialogSurface, DialogTitle, DialogBody, DialogActions } from '@fluentui/react-components';
 import { CompactUploadBar } from '../components/CompactUploadBar';
 import { ContractCard } from '../components/ContractCard';
 import { useApp } from '../context/AppContext';

@@ -4,7 +4,7 @@ import { Navbar } from '../components/Navbar';
 import { ContractCard } from '../components/ContractCard';
 import { useApp } from '../context/AppContext';
 import { api } from '../apiService';
-import { Card, Body1, Caption1 } from '@fluentui/react-components';
+import { Body1, Caption1 } from '@fluentui/react-components';
 
 const navFont = '"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif';
 const SIDEBAR_WIDTH = 260;

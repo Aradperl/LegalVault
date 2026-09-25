@@ -59,7 +59,7 @@ export function AnalyticsPage() {
   const hasPayments = analytics.upcomingPayments.length > 0;
   const hasRisks = analytics.riskCounts.length > 0;
   const hasClusters = analytics.expiryClusters.length > 0;
-  const hasNextBig = !!analytics.nextBig;
+  const nextBig = analytics.nextBig;
   const hasCounterparties = analytics.topCounterparties.length > 0;
 
   return (
@@ -169,18 +169,18 @@ export function AnalyticsPage() {
           </Card>
           <Card style={{ padding: 16 }}>
             <Text size={400} weight="semibold" block style={{ marginBottom: 12 }}>Next Big Expiry</Text>
-            {!hasNextBig ? (
+            {!nextBig ? (
               <Body1 style={{ color: '#64748b' }}>No upcoming expiries.</Body1>
             ) : (
               <Card style={{ padding: 16, background: '#f8fafc' }}>
-                <Text size={400} weight="bold" block style={{ marginBottom: 4 }}>{analytics.nextBig.party}</Text>
-                <Caption1 block style={{ marginBottom: 4 }}>{analytics.nextBig.subject}</Caption1>
+                <Text size={400} weight="bold" block style={{ marginBottom: 4 }}>{nextBig.party}</Text>
+                <Caption1 block style={{ marginBottom: 4 }}>{nextBig.subject}</Caption1>
                 <Text size={400} weight="semibold" style={{ color: '#6366f1' }}>
-                  Expires: {formatExpiryDate(analytics.nextBig.expiry)}
+                  Expires: {formatExpiryDate(nextBig.expiry)}
                 </Text>
-                {analytics.nextBig.annual_value > 0 && (
+                {nextBig.annual_value > 0 && (
                   <Caption1 block style={{ marginTop: 4 }}>
-                    ~{formatAnnual(analytics.nextBig.annual_value)}/year
+                    ~{formatAnnual(nextBig.annual_value)}/year
                   </Caption1>
                 )}
               </Card>

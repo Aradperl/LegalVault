@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Title1, Body1, Input, Card, Button } from '@fluentui/react-components';
+import { Title1, Body1, Input, Card } from '@fluentui/react-components';
 import * as S from '../AppStyles';
 
 interface DashboardHeaderProps {
