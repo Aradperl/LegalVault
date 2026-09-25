@@ -10,6 +10,9 @@ import { ContractsPage } from './pages/ContractsPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AboutPage } from './pages/AboutPage';
+import { LandingPage } from './pages/LandingPage';
+import { Trash2 } from 'lucide-react';
+import { C, FONT } from './theme';
 import { safeParse } from './utils/contractHelpers';
 
 function renderInsightContent(raw: string | unknown) {
@@ -409,122 +412,53 @@ function App() {
     ]
   );
 
-  // --- Render Auth ---
+  // --- Render Auth (landing) ---
   if (!isLoggedIn) {
-     return (
-       <div style={S.authContainerStyle}>
-         <style>{`
-           @keyframes authSuccessPop {
-             from { opacity: 0; transform: scale(0.92); }
-             to { opacity: 1; transform: scale(1); }
-           }
-           .auth-page input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
-           .auth-page button.primary-auth:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45); }
-           .auth-page button.primary-auth:active { transform: translateY(0); }
-           .auth-success-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45); }
-           .auth-modal-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45); }
-         `}</style>
-         {authModal && (
-           <div style={S.authSuccessOverlay} onClick={() => setAuthModal(null)} role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
-             <div style={S.authSuccessCard} onClick={e => e.stopPropagation()}>
-               {authModal.type === 'success' ? (
-                 <div style={S.authSuccessIcon}>✓</div>
-               ) : (
-                 <div style={S.authErrorIcon}>✕</div>
-               )}
-               <h2 id="auth-modal-title" style={authModal.type === 'success' ? S.authSuccessTitle : S.authErrorTitle}>
-                 {authModal.title}
-               </h2>
-               <p style={authModal.type === 'success' ? S.authSuccessText : S.authErrorText}>
-                 {authModal.body}
-               </p>
-               <button
-                 type="button"
-                 style={authModal.type === 'success' ? S.authSuccessBtn : S.authErrorBtn}
-                 className="auth-modal-btn"
-                 onClick={() => setAuthModal(null)}
-               >
-                 {authModal.buttonText}
-               </button>
-             </div>
-           </div>
-         )}
-         <div style={S.authBgBlob1} aria-hidden />
-         <div style={S.authBgBlob2} aria-hidden />
-         <div style={S.authCardStyle} className="auth-page">
-           <div style={S.logoIconLarge}>LV</div>
-           <div style={S.authAppName}>LegalVault</div>
-           <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '4px', color: '#334155' }}>
-             {authMode === 'login' ? 'Welcome back' : 'Create your account'}
-           </h2>
-           <p style={S.modernInputSub}>
-             {authMode === 'login'
-               ? 'Sign in to manage and analyze your contracts.'
-               : 'Get started with AI-powered contract insights.'}
-           </p>
-           <input
-             placeholder="Username"
-             value={username}
-             onChange={e => setUsername(e.target.value)}
-             style={S.modernInput}
-             autoComplete="username"
-           />
-           {authMode === 'signup' && (
-             <input
-               placeholder="Email"
-               type="email"
-               value={email}
-               onChange={e => setEmail(e.target.value)}
-               style={S.modernInput}
-               autoComplete="email"
-             />
-           )}
-           <input
-             type="password"
-             placeholder="Password"
-             value={password}
-             onChange={e => setPassword(e.target.value)}
-             style={S.modernInput}
-             autoComplete={authMode === 'login' ? 'current-password' : 'new-password'}
-           />
-           <button
-             type="button"
-             onClick={handleAuth}
-             disabled={authLoading}
-             style={S.primaryBtnFull}
-             className="primary-auth"
-           >
-             {authLoading ? (authMode === 'login' ? 'Signing in…' : 'Signing up…') : authMode === 'login' ? 'Sign in' : 'Sign up'}
-           </button>
-           <button
-             type="button"
-             onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}
-             style={{ ...S.toggleAuthText, background: 'none', border: 'none', padding: 0 }}
-           >
-             {authMode === 'login' ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
-           </button>
-           <div style={S.authFeatures}>
-             <span style={S.authFeaturePill}>📄 AI analysis</span>
-             <span style={S.authFeaturePill}>🔒 Secure storage</span>
-             <span style={S.authFeaturePill}>📅 Reminders</span>
-           </div>
-         </div>
-       </div>
-     );
+    return (
+      <>
+        {authModal && (
+          <div style={S.authSuccessOverlay} onClick={() => setAuthModal(null)} role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+            <div style={S.authSuccessCard} onClick={e => e.stopPropagation()}>
+              <div style={authModal.type === 'success' ? S.authSuccessIcon : S.authErrorIcon} aria-hidden>
+                {authModal.type === 'success' ? '✓' : '!'}
+              </div>
+              <h2 id="auth-modal-title" style={authModal.type === 'success' ? S.authSuccessTitle : S.authErrorTitle}>
+                {authModal.title}
+              </h2>
+              <p style={authModal.type === 'success' ? S.authSuccessText : S.authErrorText}>
+                {authModal.body}
+              </p>
+              <button
+                type="button"
+                style={authModal.type === 'success' ? S.authSuccessBtn : S.authErrorBtn}
+                className="btn-primary"
+                onClick={() => setAuthModal(null)}
+                autoFocus
+              >
+                {authModal.buttonText}
+              </button>
+            </div>
+          </div>
+        )}
+        <LandingPage
+          authMode={authMode}
+          onToggleMode={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}
+          username={username}
+          onUsernameChange={setUsername}
+          email={email}
+          onEmailChange={setEmail}
+          password={password}
+          onPasswordChange={setPassword}
+          onSubmit={handleAuth}
+          loading={authLoading}
+        />
+      </>
+    );
   }
 
   // --- Main Render (logged-in dashboard with routing) ---
   return (
     <>
-      <style>{`
-        @keyframes scanMove { 0% { transform: translateY(-100%); } 100% { transform: translateY(400%); } }
-        .scanner-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #6366f1, transparent); box-shadow: 0 0 15px #6366f1; animation: scanMove 2s linear infinite; }
-        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.05); }
-        .delete-trigger:hover .trash-lid { transform: translateY(-5px) rotate(-15deg); fill: #ef4444; }
-        .delete-trigger:hover .trash-base { fill: #ef4444; }
-        .trash-lid, .trash-base { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); fill: #94a3b8; }
-        .delete-trigger svg { overflow: visible !important; }
-      `}</style>
 
       <AppProvider value={appContextValue}>
         <Routes>
@@ -542,7 +476,7 @@ function App() {
         <div style={S.modalOverlay} onClick={() => setSelectedAnalysis(null)}>
           <Card style={S.modalContent} onClick={e => e.stopPropagation()}>
             <div style={S.modalHeader}>
-              <Subtitle1 block style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#1e293b' }}>Contract Insights</Subtitle1>
+              <Subtitle1 block style={{ margin: 0, fontFamily: FONT.heading, fontSize: '20px', fontWeight: 700, color: C.text }}>Contract insights</Subtitle1>
               <Button appearance="subtle" onClick={() => setSelectedAnalysis(null)} aria-label="Close">×</Button>
             </div>
             <div style={S.modalBody}>{renderInsightContent(selectedAnalysis)}</div>
@@ -554,7 +488,7 @@ function App() {
         <div
           style={{
             position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-            background: 'rgba(15, 23, 42, 0.5)', backdropFilter: 'blur(6px)',
+            background: 'rgba(5, 8, 14, 0.75)', backdropFilter: 'blur(6px)',
             display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1001,
             padding: 24
           }}
@@ -562,13 +496,13 @@ function App() {
         >
           <div
             style={{
-              background: '#fff', borderRadius: 16, boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              background: C.panel, border: `1px solid ${C.slate}`, borderRadius: 12, boxShadow: '0 25px 50px -12px rgba(0,0,0,0.6)',
               width: '95vw', maxWidth: 900, height: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden'
             }}
             onClick={e => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid #e2e8f0', flexShrink: 0 }}>
-              <Subtitle1 block style={{ fontWeight: 700, color: '#1e293b' }}>Contract preview</Subtitle1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: `1px solid ${C.slate}`, flexShrink: 0 }}>
+              <Subtitle1 block style={{ fontFamily: FONT.heading, fontWeight: 700, color: C.text }}>Contract preview</Subtitle1>
               <Button appearance="subtle" onClick={() => setPdfViewUrl((p) => (p?.startsWith('blob:') ? (URL.revokeObjectURL(p), null) : null))} aria-label="Close">×</Button>
             </div>
             <iframe title="Contract PDF" src={pdfViewUrl} style={{ flex: 1, width: '100%', border: 'none', minHeight: 400 }} />
@@ -579,7 +513,7 @@ function App() {
       {deleteConfirmId && (
         <div style={S.modalOverlay} onClick={() => setDeleteConfirmId(null)}>
           <Card style={S.deleteModalCard} onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>🗑️</div>
+            <div style={S.deleteModalIcon} aria-hidden><Trash2 size={26} strokeWidth={2} /></div>
             <Subtitle1 block style={S.deleteModalTitle}>Delete contract?</Subtitle1>
             <Body1 block style={S.deleteModalText}>This will permanently remove the contract and its analysis. This action cannot be undone.</Body1>
             <div style={S.deleteModalActions}>

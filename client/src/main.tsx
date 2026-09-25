@@ -1,7 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import { FluentProvider, webLightTheme } from '@fluentui/react-components'
+import { FluentProvider } from '@fluentui/react-components'
+import { legalVaultTheme } from './theme'
+import './index.css'
 import App from './App.tsx'
 import ErrorBoundary from './ErrorBoundary.tsx'
 
@@ -13,7 +15,7 @@ if (!rootElement) {
 try {
   createRoot(rootElement).render(
     <StrictMode>
-      <FluentProvider theme={webLightTheme}>
+      <FluentProvider theme={legalVaultTheme}>
         <ErrorBoundary>
           <BrowserRouter>
             <App />

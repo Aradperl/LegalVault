@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Text, Badge, Avatar } from '@fluentui/react-components';
+import { Button, Avatar } from '@fluentui/react-components';
+import { C, FONT } from '../theme';
 
 interface NavbarProps {
   isGoogleConnected: boolean;
@@ -14,53 +15,59 @@ const navbarStyle: React.CSSProperties = {
   justifyContent: 'space-between',
   height: 72,
   padding: '0 28px',
-  background: '#fff',
-  borderBottom: '1px solid #e2e8f0',
-  boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+  background: 'rgba(9, 14, 23, 0.92)',
+  backdropFilter: 'blur(8px)',
+  borderBottom: `1px solid ${C.slate}`,
 };
 
 const logoStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  gap: 14,
+  gap: 12,
 };
 
-const logoIconStyle: React.CSSProperties = {
-  width: 40,
-  height: 40,
-  borderRadius: 12,
-  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-  color: '#fff',
-  fontSize: 16,
+const wordmarkStyle: React.CSSProperties = {
+  fontFamily: FONT.heading,
   fontWeight: 800,
-  display: 'flex',
+  fontSize: 17,
+  letterSpacing: '0.06em',
+  color: C.text,
+};
+
+const googleStatusStyle: React.CSSProperties = {
+  display: 'inline-flex',
   alignItems: 'center',
-  justifyContent: 'center',
+  gap: 8,
+  fontSize: 13,
+  fontWeight: 500,
+  color: C.textSoft,
+  padding: '6px 12px',
+  borderRadius: 6,
+  border: `1px solid ${C.slate}`,
 };
 
 export const Navbar: React.FC<NavbarProps> = ({ isGoogleConnected, userPicture, currentUser, onGoogleConnect }) => (
   <nav style={navbarStyle}>
     <div style={logoStyle}>
-      <div style={logoIconStyle}>AI</div>
-      <Text size={500} weight="bold">LegalVault</Text>
+      <img src="/logo-mark.png" alt="" width={38} height={33} style={{ objectFit: 'contain' }} />
+      <span style={wordmarkStyle}>LEGALVAULT</span>
     </div>
     <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
       {isGoogleConnected ? (
-        <Badge appearance="filled" color="informative" size="medium">
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
-            Google Active
-          </span>
-        </Badge>
+        <span style={googleStatusStyle}>
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: C.emerald }} aria-hidden />
+          Google Calendar connected
+        </span>
       ) : (
         <Button appearance="outline" onClick={onGoogleConnect}>
-          Connect Google
+          Connect Google Calendar
         </Button>
       )}
-      <span style={{ width: 1, height: 24, background: '#e2e8f0' }} />
+      <span style={{ width: 1, height: 24, background: C.slate }} />
       <Avatar
         name={currentUser}
-        image={{ src: userPicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser)}` }}
+        color="brand"
+        image={userPicture ? { src: userPicture } : undefined}
         title={currentUser}
       />
     </div>

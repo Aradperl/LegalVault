@@ -1,0 +1,152 @@
+:root {
+  color-scheme: dark;
+  --vault: #090E17;
+  --panel: #0F1724;
+  --slate: #1E293B;
+  --line-strong: #2B3A52;
+  --text: #E2E8F0;
+  --muted: #94A3B8;
+  --teal: #0D9488;
+  --emerald: #14B8A6;
+  --cyber: #0EA5E9;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  margin: 0;
+  min-height: 100%;
+  background: var(--vault);
+  color: var(--text);
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* FluentProvider paints its own background; keep it on brand */
+.fui-FluentProvider { background: var(--vault); min-height: 100vh; }
+
+h1, h2, h3 { font-family: "Plus Jakarta Sans", "Inter", sans-serif; }
+
+::selection { background: rgba(20, 184, 166, 0.35); color: #fff; }
+
+:focus-visible { outline: 2px solid var(--emerald); outline-offset: 2px; }
+
+input, select, textarea, button { font: inherit; }
+
+select {
+  background: var(--slate);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+}
+
+a { color: var(--cyber); }
+
+* { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+
+/* Contract card: quiet border shift on hover, no lift */
+.card-hover { transition: border-color 0.2s ease; }
+.card-hover:hover { border-color: var(--line-strong) !important; }
+
+/* Upload scanner (shown while a PDF is analyzed) */
+@keyframes scanMove { 0% { transform: translateY(-100%); } 100% { transform: translateY(400%); } }
+.scanner-line {
+  position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--emerald), transparent);
+  box-shadow: 0 0 14px var(--emerald);
+  animation: scanMove 2s linear infinite;
+}
+
+.delete-trigger svg { overflow: visible !important; }
+.trash-lid, .trash-base { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); fill: #64748B; }
+.delete-trigger:hover .trash-lid { transform: translateY(-5px) rotate(-15deg); fill: #F87171; }
+.delete-trigger:hover .trash-base { fill: #F87171; }
+
+.nav-link:hover { color: var(--text) !important; background: rgba(30, 41, 59, 0.6); }
+
+.btn-primary { transition: background-color 0.15s ease; }
+.btn-primary:hover:not(:disabled) { background: #0F9E90 !important; }
+.btn-primary:disabled { opacity: 0.6; cursor: progress; }
+
+.auth-input:focus { border-color: var(--emerald) !important; box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18); }
+
+@keyframes popIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+
+/* ---------- Landing ---------- */
+.landing {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr);
+  overflow-x: hidden;
+  background:
+    radial-gradient(900px 500px at 85% 20%, rgba(13, 148, 136, 0.10), transparent 70%),
+    var(--vault);
+}
+
+.landing-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(32px, 6vw, 96px);
+  align-items: center;
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px clamp(16px, 4vw, 48px) 56px;
+}
+
+@media (max-width: 960px) {
+  .landing-main { grid-template-columns: 1fr; }
+  .specimen-wrap { order: 2; }
+}
+
+/* The specimen: a contract page being read, clause by clause */
+.specimen {
+  position: relative;
+  background: #0C1320;
+  border: 1px solid var(--slate);
+  border-radius: 6px;
+  padding: 36px 36px 28px;
+  overflow: hidden;
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.7);
+}
+
+.specimen-scan {
+  position: absolute; left: 0; right: 0; top: -90px; height: 90px;
+  background: linear-gradient(180deg, transparent, rgba(20, 184, 166, 0.10) 80%, rgba(20, 184, 166, 0.7) 100%);
+  border-bottom: 1px solid var(--emerald);
+  pointer-events: none;
+  animation: specimenScan 2.6s cubic-bezier(0.45, 0, 0.35, 1) 0.4s forwards;
+}
+
+@keyframes specimenScan {
+  0% { top: -90px; opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.clause-tag {
+  opacity: 0;
+  transform: translateX(-6px);
+  animation: tagIn 0.35s ease-out forwards;
+}
+
+@keyframes tagIn { to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .specimen-scan { display: none; }
+  .clause-tag { animation: none; opacity: 1; transform: none; }
+  .scanner-line { animation-duration: 6s; }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; }
+
+.row-link { transition: background-color 0.15s ease; }
+.row-link:hover { background: rgba(30, 41, 59, 0.5); }
+
+@media (max-width: 520px) {
+  .specimen { padding: 24px 20px 20px; }
+}

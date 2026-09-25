@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Card, Body1 } from '@fluentui/react-components';
+import { FileUp, Loader2 } from 'lucide-react';
 import * as S from '../AppStyles';
+import { C } from '../theme';
 
 interface CompactUploadBarProps {
   loading: boolean;
@@ -36,7 +38,7 @@ export function CompactUploadBar({ loading, onUpload, onFileDrop }: CompactUploa
     }
   };
 
-  const labelText = loading ? 'Analyzing…' : 'Add new contract — click or drop PDF here';
+  const labelText = loading ? 'Reading your contract…' : 'Add a contract: drop a PDF here or click to choose';
 
   return (
     <Card
@@ -46,7 +48,7 @@ export function CompactUploadBar({ loading, onUpload, onFileDrop }: CompactUploa
         padding: '16px 24px',
         marginTop: 0,
         marginBottom: 24,
-        borderRadius: 16,
+        borderRadius: 10,
       }}
       className={loading ? 'loading' : ''}
       onDragOver={handleDragOver}
@@ -65,10 +67,10 @@ export function CompactUploadBar({ loading, onUpload, onFileDrop }: CompactUploa
         htmlFor="compact-file"
         style={{ ...S.uploadLabel, flexDirection: 'row', cursor: 'pointer', margin: 0 }}
       >
-        <div style={{ ...S.iconCircle, width: 44, height: 44, fontSize: 20, marginBottom: 0 }}>
-          {loading ? '⚙️' : '📄'}
+        <div style={{ ...S.iconCircle, width: 40, height: 40, marginBottom: 0 }}>
+          {loading ? <Loader2 size={20} strokeWidth={2} className="spin" aria-hidden /> : <FileUp size={20} strokeWidth={2} aria-hidden />}
         </div>
-        <Body1 style={{ fontSize: 15, fontWeight: 600 }}>{labelText}</Body1>
+        <Body1 style={{ fontSize: 15, fontWeight: 600, color: C.text }}>{labelText}</Body1>
       </label>
     </Card>
   );

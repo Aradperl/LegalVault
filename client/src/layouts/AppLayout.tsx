@@ -4,9 +4,9 @@ import { Navbar } from '../components/Navbar';
 import { ContractCard } from '../components/ContractCard';
 import { useApp } from '../context/AppContext';
 import { api } from '../apiService';
-import { Body1, Caption1 } from '@fluentui/react-components';
-
-const navFont = '"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif';
+import { Body1 } from '@fluentui/react-components';
+import { Home, FileText, BarChart3, Settings, Info, type LucideIcon } from 'lucide-react';
+import { C, FONT } from '../theme';
 const SIDEBAR_WIDTH = 260;
 const NAVBAR_HEIGHT = 72;
 
@@ -16,12 +16,12 @@ const sidebarStyle: CSSProperties = {
   top: NAVBAR_HEIGHT,
   width: SIDEBAR_WIDTH,
   height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
-  background: '#fff',
-  borderRight: '1px solid #e2e8f0',
+  background: C.vault,
+  borderRight: `1px solid ${C.slate}`,
   padding: '20px 0',
   display: 'flex',
   flexDirection: 'column',
-  fontFamily: navFont,
+  fontFamily: FONT.body,
   zIndex: 40,
   overflow: 'hidden',
 };
@@ -29,29 +29,48 @@ const sidebarStyle: CSSProperties = {
 const navLinkBase: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  gap: 14,
-  padding: '18px 24px',
+  gap: 12,
+  padding: '11px 16px',
   margin: '0 12px',
-  borderRadius: 14,
-  fontSize: 16,
-  fontWeight: 600,
-  color: '#64748b',
+  borderRadius: 6,
+  fontSize: 15,
+  fontWeight: 500,
+  color: C.muted,
   textDecoration: 'none',
-  transition: 'all 0.2s ease',
-  fontFamily: navFont,
-  letterSpacing: '-0.01em',
+  transition: 'color 0.15s ease, background-color 0.15s ease',
+  fontFamily: FONT.body,
+  boxShadow: 'inset 2px 0 0 transparent',
 };
 
 const navLinkActive: CSSProperties = {
-  background: 'linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%)',
-  color: '#6366f1',
+  background: C.slate,
+  color: C.text,
+  boxShadow: `inset 2px 0 0 ${C.emerald}`,
 };
+
+function SideLink({ to, icon: Icon, label, end }: { to: string; icon: LucideIcon; label: string; end?: boolean }) {
+  return (
+    <NavLink
+      to={to}
+      end={end}
+      className="nav-link"
+      style={({ isActive }) => ({ ...navLinkBase, ...(isActive ? navLinkActive : {}) })}
+    >
+      {({ isActive }) => (
+        <>
+          <Icon size={18} strokeWidth={2} color={isActive ? C.emerald : 'currentColor'} aria-hidden />
+          {label}
+        </>
+      )}
+    </NavLink>
+  );
+}
 
 const sidebarBottomStyle: CSSProperties = {
   marginTop: 'auto',
   paddingTop: 20,
   paddingBottom: 24,
-  borderTop: '1px solid #e2e8f0',
+  borderTop: `1px solid ${C.slate}`,
   display: 'flex',
   flexDirection: 'column',
   gap: 4,
@@ -63,8 +82,8 @@ const recentSectionStyle: CSSProperties = {
   minHeight: 0,
   overflowY: 'auto',
   padding: '16px 12px 0',
-  marginTop: 8,
-  borderTop: '1px solid #e2e8f0',
+  marginTop: 12,
+  borderTop: `1px solid ${C.slate}`,
 };
 
 function getRecentContracts(history: { contract_id: string; timestamp: string }[]) {
@@ -78,7 +97,7 @@ export function AppLayout() {
   const recentContracts = getRecentContracts(app.history || []);
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: C.vault }}>
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50 }}>
         <Navbar
           isGoogleConnected={app.isGoogleConnected}
@@ -96,37 +115,18 @@ export function AppLayout() {
       </div>
 
       <aside style={sidebarStyle}>
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <NavLink
-            to="/"
-            end
-            style={({ isActive }) => ({ ...navLinkBase, ...(isActive ? navLinkActive : {}) })}
-          >
-            <span aria-hidden style={{ fontSize: 20 }}>🏠</span>
-            Home
-          </NavLink>
-          <NavLink
-            to="/contracts"
-            style={({ isActive }) => ({ ...navLinkBase, ...(isActive ? navLinkActive : {}) })}
-          >
-            <span aria-hidden style={{ fontSize: 20 }}>📄</span>
-            Contracts
-          </NavLink>
-          <NavLink
-            to="/analytics"
-            style={({ isActive }) => ({ ...navLinkBase, ...(isActive ? navLinkActive : {}) })}
-          >
-            <span aria-hidden style={{ fontSize: 20 }}>📊</span>
-            Analytics
-          </NavLink>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <SideLink to="/" end icon={Home} label="Home" />
+          <SideLink to="/contracts" icon={FileText} label="Contracts" />
+          <SideLink to="/analytics" icon={BarChart3} label="Analytics" />
         </nav>
 
         <div style={recentSectionStyle}>
-          <Caption1 block style={{ fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>
-            Recent
-          </Caption1>
+          <h2 style={{ fontFamily: FONT.heading, fontSize: 13, fontWeight: 600, color: C.muted, margin: '0 4px 10px' }}>
+            Recently added
+          </h2>
           {recentContracts.length === 0 ? (
-            <Body1 style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>No contracts yet</Body1>
+            <Body1 style={{ fontSize: 13, color: C.faint, margin: '0 4px' }}>Contracts you upload will appear here.</Body1>
           ) : (
             recentContracts.map((contract) => (
               <div key={contract.contract_id} style={{ width: '100%', minWidth: 0, marginBottom: 12 }}>
@@ -146,20 +146,8 @@ export function AppLayout() {
         </div>
 
         <div style={sidebarBottomStyle}>
-          <NavLink
-            to="/settings"
-            style={({ isActive }) => ({ ...navLinkBase, ...(isActive ? navLinkActive : {}) })}
-          >
-            <span aria-hidden style={{ fontSize: 20 }}>⚙️</span>
-            Settings
-          </NavLink>
-          <NavLink
-            to="/about"
-            style={({ isActive }) => ({ ...navLinkBase, ...(isActive ? navLinkActive : {}) })}
-          >
-            <span aria-hidden style={{ fontSize: 20 }}>ℹ️</span>
-            About
-          </NavLink>
+          <SideLink to="/settings" icon={Settings} label="Settings" />
+          <SideLink to="/about" icon={Info} label="About" />
         </div>
       </aside>
 
@@ -172,7 +160,8 @@ export function AppLayout() {
           paddingLeft: 32,
           paddingRight: 32,
           paddingBottom: 48,
-          fontFamily: navFont,
+          fontFamily: FONT.body,
+          color: C.text,
         }}
       >
         <Outlet />

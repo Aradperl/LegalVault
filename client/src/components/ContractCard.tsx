@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import * as S from '../AppStyles';
 import { safeParse, riskFlagLabel } from '../utils/contractHelpers';
 import type { FolderItem } from '../apiService';
+import { FileText, Sparkles, FolderPlus, Check } from 'lucide-react';
+import { C } from '../theme';
 
 interface ContractCardProps {
   contract: any;
@@ -46,14 +48,16 @@ export const ContractCard: React.FC<ContractCardProps> = ({
 
   const isInFolder = (f: FolderItem) => (f.contract_ids || []).includes(contract.contract_id);
 
-  const cardStyleFinal = compact ? { ...S.cardStyle, padding: '14px 12px', borderRadius: 14 } : S.cardStyle;
-  const cardPartyFinal = compact ? { ...S.cardParty, fontSize: 16 } : S.cardParty;
+  const cardStyleFinal = compact ? { ...S.cardStyle, padding: '12px', borderRadius: 8 } : S.cardStyle;
+  const cardPartyFinal = compact ? { ...S.cardParty, fontSize: 15 } : S.cardParty;
   const cardSummaryFinal = compact ? { ...S.cardSummary, fontSize: 13 } : S.cardSummary;
   const cardMetaFinal = compact ? { ...S.cardMeta, marginTop: 12, padding: '10px 0' } : S.cardMeta;
   const cardActionsFinal = compact ? { ...S.cardActions, marginTop: 10, gap: 6, flexWrap: 'wrap' as const } : S.cardActions;
-  const notSignedStyle = compact
-    ? { marginTop: 8, padding: '6px 10px', borderRadius: 8, background: '#fef3c7', border: '1px solid #fcd34d', fontSize: 12, fontWeight: 600, color: '#92400e', display: 'inline-block' as const, width: 'fit-content' }
-    : { marginTop: 8, padding: '8px 12px', borderRadius: 10, background: '#fef3c7', border: '1px solid #fcd34d', fontSize: 13, fontWeight: 600, color: '#92400e', display: 'inline-block' as const, width: 'fit-content' };
+  const notSignedStyle = {
+    marginTop: 10, padding: compact ? '3px 8px' : '4px 10px', borderRadius: 4, background: C.warnSoft,
+    border: `1px solid ${C.warn}33`, fontSize: compact ? 11.5 : 12.5, fontWeight: 500, color: C.warn,
+    display: 'inline-block' as const, width: 'fit-content',
+  };
   const alertSelectStyle = compact ? { ...S.miniSelect, width: 72, minWidth: 72, padding: '6px 6px' } : { ...S.miniSelect, width: 88, minWidth: 88 };
 
   return (
@@ -80,46 +84,46 @@ export const ContractCard: React.FC<ContractCardProps> = ({
 
       <div style={cardMetaFinal}>
         <div style={S.metaCell}>
-          <span style={S.metaLabel}>📅 Uploaded</span>
+          <span style={S.metaLabel}>Uploaded</span>
           <span style={S.metaValue}>{new Date(contract.timestamp).toLocaleDateString()}</span>
         </div>
         <div style={S.metaCell}>
-          <span style={S.metaLabel}>⌛ Expires</span>
-          <span style={{ ...S.metaValue, color: details.expiry !== 'N/A' ? '#dc2626' : '#94a3b8' }}>
+          <span style={S.metaLabel}>Expires</span>
+          <span style={{ ...S.metaValue, color: details.expiry !== 'N/A' ? C.text : C.faint }}>
             {details.expiry}
           </span>
         </div>
       </div>
 
       {!details.is_signed && (
-        <div style={notSignedStyle}>✍️ Not signed</div>
+        <div style={notSignedStyle}>Not signed</div>
       )}
 
       {details.risk_flags && details.risk_flags.length > 0 && (
         <div style={{ marginTop: compact ? 8 : 10 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#b91c1c', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>🚩 Red flags</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: C.danger, marginBottom: 6 }}>Needs review</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: compact ? 4 : 6 }}>
             {details.risk_flags.map((flag) => (
               <span
                 key={flag}
-                style={{ background: '#fef2f2', color: '#b91c1c', padding: compact ? '3px 8px' : '4px 10px', borderRadius: 8, fontSize: compact ? 11 : 12, fontWeight: 600 }}
+                style={{ background: C.dangerSoft, color: C.danger, border: `1px solid ${C.danger}33`, padding: compact ? '2px 7px' : '3px 9px', borderRadius: 4, fontSize: compact ? 11 : 12, fontWeight: 500 }}
               >
                 {riskFlagLabel(flag)}
               </span>
             ))}
           </div>
           {'risk_flags_note' in details && details.risk_flags_note && (
-            <p style={{ margin: '8px 0 0', fontSize: 12, color: '#64748b', lineHeight: 1.4 }}>{String(details.risk_flags_note)}</p>
+            <p style={{ margin: '8px 0 0', fontSize: 12, color: C.muted, lineHeight: 1.45 }}>{String(details.risk_flags_note)}</p>
           )}
         </div>
       )}
 
       <div style={cardActionsFinal}>
         <button type="button" onClick={(e) => onFileClick(contract.contract_id, e)} style={S.viewPdfBtn}>
-          📄 View PDF
+          <FileText size={15} strokeWidth={2} aria-hidden /> View PDF
         </button>
         <button type="button" onClick={() => onViewInsights(summaryText)} style={S.secondaryBtn}>
-          Insights
+          <Sparkles size={15} strokeWidth={2} aria-hidden /> Insights
         </button>
         {isGoogleConnected && (
           <select
@@ -127,9 +131,9 @@ export const ContractCard: React.FC<ContractCardProps> = ({
             onChange={(e) => onReminderChange(contract.contract_id, e.target.value)}
             style={alertSelectStyle}
           >
-            <option value="none">No Alert</option>
-            <option value="week">1 Week</option>
-            <option value="month">1 Month</option>
+            <option value="none">No alert</option>
+            <option value="week">1 week</option>
+            <option value="month">1 month</option>
           </select>
         )}
       </div>
@@ -139,9 +143,9 @@ export const ContractCard: React.FC<ContractCardProps> = ({
           <button
             type="button"
             onClick={() => setFolderMenuOpen((o) => !o)}
-            style={{ ...S.miniSelect, width: '100%', textAlign: 'left' }}
+            style={{ ...S.miniSelect, width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8 }}
           >
-            📁 Add to folder
+            <FolderPlus size={15} strokeWidth={2} aria-hidden /> Add to folder
           </button>
           {folderMenuOpen && (
             <>
@@ -153,10 +157,10 @@ export const ContractCard: React.FC<ContractCardProps> = ({
                   right: 0,
                   top: '100%',
                   marginTop: 4,
-                  background: '#fff',
-                  borderRadius: 12,
-                  border: '1px solid #e2e8f0',
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                  background: C.slate,
+                  borderRadius: 8,
+                  border: `1px solid ${C.lineStrong}`,
+                  boxShadow: '0 12px 28px rgba(0,0,0,0.5)',
                   zIndex: 11,
                   padding: 6,
                   maxHeight: 200,
@@ -177,15 +181,15 @@ export const ContractCard: React.FC<ContractCardProps> = ({
                         width: '100%',
                         padding: '10px 12px',
                         border: 'none',
-                        borderRadius: 8,
-                        background: inFolder ? `${f.color}20` : 'transparent',
-                        color: '#334155',
+                        borderRadius: 6,
+                        background: inFolder ? `${f.color}26` : 'transparent',
+                        color: C.text,
                         fontSize: 14,
                         cursor: 'pointer',
                         textAlign: 'left',
                       }}
                     >
-                      <span>{inFolder ? '✓' : ''}</span>
+                      <span style={{ width: 14, display: 'inline-flex' }}>{inFolder && <Check size={14} strokeWidth={2.5} aria-hidden />}</span>
                       <span>{f.symbol || '📁'}</span>
                       {f.name}
                     </button>

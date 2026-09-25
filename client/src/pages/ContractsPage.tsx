@@ -1,16 +1,18 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Subtitle1, Body1, Button, Input, Label, Dialog, DialogTrigger, DialogSurface, DialogTitle, DialogBody, DialogActions } from '@fluentui/react-components';
+import { Body1, Button, Input, Label, Dialog, DialogTrigger, DialogSurface, DialogTitle, DialogBody, DialogActions } from '@fluentui/react-components';
 import { CompactUploadBar } from '../components/CompactUploadBar';
 import { ContractCard } from '../components/ContractCard';
 import { useApp } from '../context/AppContext';
 import { api, type FolderItem } from '../apiService';
 import { safeParse } from '../utils/contractHelpers';
+import { Layers, Clock, PenLine, ShieldAlert, X, Plus } from 'lucide-react';
+import { C, FONT } from '../theme';
 
 const SYSTEM_FOLDERS = [
-  { id: 'all', label: 'All', symbol: '📋', color: '#64748b' },
-  { id: 'expires_30', label: 'Expires in 30 days', symbol: '⏰', color: '#ea580c' },
-  { id: 'not_signed', label: 'Not signed', symbol: '✍️', color: '#7c3aed' },
-  { id: 'red_flag', label: 'Red flag', symbol: '🚩', color: '#dc2626' },
+  { id: 'all', label: 'All', icon: Layers, color: C.emerald },
+  { id: 'expires_30', label: 'Expires in 30 days', icon: Clock, color: C.warn },
+  { id: 'not_signed', label: 'Not signed', icon: PenLine, color: C.cyber },
+  { id: 'red_flag', label: 'Needs review', icon: ShieldAlert, color: C.danger },
 ] as const;
 
 function getContractIdsInFolder(
@@ -68,14 +70,22 @@ const folderButtonBase: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   gap: 8,
-  padding: '10px 16px',
-  borderRadius: 12,
-  fontWeight: 600,
+  padding: '8px 14px',
+  borderRadius: 6,
+  fontWeight: 500,
   fontSize: 14,
   cursor: 'pointer',
-  border: '1px solid #e2e8f0',
-  background: '#fff',
-  color: '#475569',
+  border: `1px solid ${C.slate}`,
+  background: C.panel,
+  color: C.textSoft,
+};
+
+const sectionHeading: React.CSSProperties = {
+  fontFamily: FONT.heading,
+  fontSize: 18,
+  fontWeight: 700,
+  color: C.text,
+  margin: 0,
 };
 
 export function ContractsPage() {
@@ -101,7 +111,7 @@ export function ContractsPage() {
   const [selectedFolderId, setSelectedFolderId] = useState<string>('all');
   const [folderModalOpen, setFolderModalOpen] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
-  const [newFolderColor, setNewFolderColor] = useState('#6366f1');
+  const [newFolderColor, setNewFolderColor] = useState('#14B8A6');
   const [newFolderSymbol, setNewFolderSymbol] = useState('📁');
   const [savingFolder, setSavingFolder] = useState(false);
 
@@ -134,7 +144,7 @@ export function ContractsPage() {
       setCustomFolders(res.data.folders || []);
       setFolderModalOpen(false);
       setNewFolderName('');
-      setNewFolderColor('#6366f1');
+      setNewFolderColor('#14B8A6');
       setNewFolderSymbol('📁');
       showToast('Folder created');
     } catch (e: unknown) {
@@ -183,19 +193,19 @@ export function ContractsPage() {
       <div style={filterBarStyle}>
         <Input
           type="text"
-          placeholder="Search contracts..."
+          placeholder="Search by party, subject or file name"
           value={searchTerm}
           onChange={(_, d) => setSearchTerm(d.value)}
-          style={{ minWidth: 240 }}
+          style={{ minWidth: 300 }}
         />
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <Body1 style={{ color: '#64748b', fontWeight: 600 }}>Sort by:</Body1>
+          <Body1 style={{ color: C.muted, fontWeight: 500 }}>Sort by</Body1>
           <select
-            style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 14 }}
+            style={{ padding: '8px 12px', borderRadius: 6, border: `1px solid ${C.lineStrong}`, fontSize: 14, background: C.slate, color: C.text }}
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as 'timestamp' | 'alphabetical' | 'expiry')}
           >
-            <option value="timestamp">Upload Date</option>
+            <option value="timestamp">Upload date</option>
             <option value="alphabetical">Company (A-Z)</option>
             <option value="expiry">Expiration</option>
           </select>
@@ -203,7 +213,7 @@ export function ContractsPage() {
       </div>
 
       <section style={{ marginBottom: 24 }}>
-        <Subtitle1 block style={{ marginBottom: 12 }}>Folders</Subtitle1>
+        <h2 style={{ ...sectionHeading, marginBottom: 12 }}>Folders</h2>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
           {SYSTEM_FOLDERS.map((f) => (
             <button
@@ -212,15 +222,16 @@ export function ContractsPage() {
               onClick={() => setSelectedFolderId(f.id)}
               style={{
                 ...folderButtonBase,
-                border: selectedFolderId === f.id ? `2px solid ${f.color}` : '1px solid #e2e8f0',
-                background: selectedFolderId === f.id ? `${f.color}12` : '#fff',
-                color: selectedFolderId === f.id ? f.color : '#475569',
+                border: `1px solid ${selectedFolderId === f.id ? f.color : C.slate}`,
+                background: selectedFolderId === f.id ? `${f.color}1A` : C.panel,
+                color: selectedFolderId === f.id ? C.text : C.textSoft,
               }}
+              aria-pressed={selectedFolderId === f.id}
             >
-              <span>{f.symbol}</span>
+              <f.icon size={16} strokeWidth={2} color={f.color} aria-hidden />
               {f.label}
               {f.id !== 'all' && (
-                <span style={{ fontSize: 12, opacity: 0.8 }}>({getFolderCount(f.id)})</span>
+                <span style={{ fontFamily: FONT.mono, fontSize: 12, color: C.muted }}>{getFolderCount(f.id)}</span>
               )}
             </button>
           ))}
@@ -231,32 +242,34 @@ export function ContractsPage() {
                 onClick={() => setSelectedFolderId(f.folder_id)}
                 style={{
                   ...folderButtonBase,
-                  borderRadius: '12px 0 0 12px',
+                  borderRadius: '6px 0 0 6px',
+                  border: `1px solid ${selectedFolderId === f.folder_id ? f.color : C.slate}`,
                   borderRight: 'none',
-                  border: selectedFolderId === f.folder_id ? `2px solid ${f.color}` : '1px solid #e2e8f0',
-                  background: selectedFolderId === f.folder_id ? `${f.color}18` : '#fff',
-                  color: selectedFolderId === f.folder_id ? f.color : '#475569',
+                  background: selectedFolderId === f.folder_id ? `${f.color}1A` : C.panel,
+                  color: selectedFolderId === f.folder_id ? C.text : C.textSoft,
                 }}
+                aria-pressed={selectedFolderId === f.folder_id}
               >
                 <span>{f.symbol || '📁'}</span>
                 {f.name}
-                <span style={{ fontSize: 12, opacity: 0.8 }}>({(f.contract_ids || []).length})</span>
+                <span style={{ fontFamily: FONT.mono, fontSize: 12, color: C.muted }}>{(f.contract_ids || []).length}</span>
               </button>
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); handleDeleteFolder(f.folder_id); }}
                 title="Delete folder"
+                aria-label={`Delete folder ${f.name}`}
                 style={{
                   ...folderButtonBase,
-                  padding: '10px 10px',
-                  borderRadius: '0 12px 12px 0',
+                  padding: '8px 9px',
+                  borderRadius: '0 6px 6px 0',
+                  border: `1px solid ${selectedFolderId === f.folder_id ? f.color : C.slate}`,
                   borderLeft: 'none',
-                  border: selectedFolderId === f.folder_id ? `2px solid ${f.color}` : '1px solid #e2e8f0',
-                  background: selectedFolderId === f.folder_id ? `${f.color}18` : '#fff',
-                  color: '#94a3b8',
+                  background: selectedFolderId === f.folder_id ? `${f.color}1A` : C.panel,
+                  color: C.faint,
                 }}
               >
-                ×
+                <X size={14} strokeWidth={2} aria-hidden />
               </button>
             </div>
           ))}
@@ -266,7 +279,7 @@ export function ContractsPage() {
               setFolderModalOpen(d.open);
               if (d.open) {
                 setNewFolderName('');
-                setNewFolderColor('#6366f1');
+                setNewFolderColor('#14B8A6');
                 setNewFolderSymbol('📁');
               }
             }}
@@ -274,9 +287,10 @@ export function ContractsPage() {
             <DialogTrigger disableButtonEnhancement>
               <Button
                 appearance="subtle"
-                style={{ border: '2px dashed #cbd5e1', background: '#f8fafc', color: '#64748b' }}
+                icon={<Plus size={16} strokeWidth={2} />}
+                style={{ border: `1px dashed ${C.lineStrong}`, color: C.muted, borderRadius: 6 }}
               >
-                + Add folder
+                New folder
               </Button>
             </DialogTrigger>
             <DialogSurface>
@@ -298,7 +312,7 @@ export function ContractsPage() {
                         type="color"
                         value={newFolderColor}
                         onChange={(e) => setNewFolderColor(e.target.value)}
-                        style={{ width: 44, height: 44, padding: 2, borderRadius: 10, border: '1px solid #e2e8f0', cursor: 'pointer' }}
+                        style={{ width: 44, height: 44, padding: 2, borderRadius: 6, border: `1px solid ${C.lineStrong}`, background: C.slate, cursor: 'pointer' }}
                       />
                       <Input
                         value={newFolderColor}
@@ -334,9 +348,16 @@ export function ContractsPage() {
 
       <section>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <Subtitle1 block>{selectedFolderLabel}</Subtitle1>
-          <Body1 style={{ color: '#64748b', fontWeight: 600 }}>{displayContracts.length} documents</Body1>
+          <h2 style={sectionHeading}>{selectedFolderLabel}</h2>
+          <Body1 style={{ color: C.muted, fontFamily: FONT.mono, fontSize: 13 }}>
+            {displayContracts.length} {displayContracts.length === 1 ? 'contract' : 'contracts'}
+          </Body1>
         </div>
+        {displayContracts.length === 0 && (
+          <p style={{ margin: 0, padding: '22px 24px', border: `1px solid ${C.slate}`, borderRadius: 10, background: C.panel, color: C.muted, fontSize: 15 }}>
+            {filteredAndSortedHistory.length === 0 ? 'No contracts yet. Drop a PDF above to add your first one.' : 'No contracts match this folder or search.'}
+          </p>
+        )}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
           {displayContracts.map((c) => (
             <ContractCard

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { Card, Subtitle1, Body1, Caption1, Text } from '@fluentui/react-components';
+import { Card, Body1, Caption1, Text } from '@fluentui/react-components';
+import { C, FONT } from '../theme';
 import { useApp } from '../context/AppContext';
 
 // --- Helpers for formatting
@@ -32,16 +33,26 @@ function getBarHeightPct(count: number, max: number): number {
 }
 
 // --- Helper: conic gradient for counterparty pie
-const PIE_COLORS = ['#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e', '#fb923c', '#eab308'];
+const PIE_COLORS = ['#14B8A6', '#0EA5E9', '#0D9488', '#38BDF8', '#5EEAD4', '#0369A1', '#99F6E4', '#64748B'];
 
 function getConicGradient(counterparties: { pct: number }[]): string {
-  if (counterparties.length === 0) return '#e2e8f0';
+  if (counterparties.length === 0) return C.slate;
   const parts = counterparties.map((p, i) => {
     const start = counterparties.slice(0, i).reduce((s, x) => s + x.pct, 0);
     return `${PIE_COLORS[i % PIE_COLORS.length]} ${start}% ${start + p.pct}%`;
   });
   return `conic-gradient(${parts.join(', ')})`;
 }
+
+const pageTitle: React.CSSProperties = {
+  fontFamily: FONT.heading,
+  fontSize: 30,
+  fontWeight: 800,
+  letterSpacing: '-0.025em',
+  color: C.text,
+  lineHeight: 1.15,
+  margin: '0 0 10px',
+};
 
 export function AnalyticsPage() {
   const { analytics } = useApp();
@@ -64,33 +75,33 @@ export function AnalyticsPage() {
 
   return (
     <section style={{ marginTop: 0 }}>
-      <Subtitle1 block style={{ marginBottom: 4 }}>Analytics</Subtitle1>
-      <Body1 block style={{ color: '#64748b', marginBottom: 24 }}>Contract insights and risk overview</Body1>
+      <h1 style={pageTitle}>Analytics</h1>
+      <Body1 block style={{ color: C.muted, marginBottom: 28 }}>What your contracts cost, when they end, and where the risk sits.</Body1>
 
       {/* Financial Exposure */}
       <Card style={{ marginBottom: 24 }}>
-        <Text size={500} weight="semibold" block style={{ marginBottom: 16 }}>Financial Exposure</Text>
+        <Text size={500} weight="bold" block style={{ marginBottom: 16, fontFamily: FONT.heading }}>Financial exposure</Text>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16, marginBottom: 20 }}>
           <Card>
             <Text size={500} weight="semibold" block>{formatAnnual(analytics.totalAnnual)}</Text>
-            <Caption1 block style={{ color: '#64748b' }}>Total Annual Liability</Caption1>
+            <Caption1 block style={{ color: C.muted }}>Total annual liability</Caption1>
           </Card>
           <Card>
             <Text size={500} weight="semibold" block>{formatCurrency(analytics.avgMonthlyBurn)}</Text>
-            <Caption1 block style={{ color: '#64748b' }}>Average Monthly Burn</Caption1>
+            <Caption1 block style={{ color: C.muted }}>Average monthly spend</Caption1>
           </Card>
         </div>
         <Card style={{ padding: 16 }}>
-          <Text size={400} weight="semibold" block style={{ marginBottom: 4 }}>Upcoming Payments</Text>
-          <Caption1 block style={{ color: '#64748b', marginBottom: 12 }}>Next 3 expiries to plan for</Caption1>
+          <Text size={400} weight="semibold" block style={{ marginBottom: 4 }}>Upcoming payments</Text>
+          <Caption1 block style={{ color: C.muted, marginBottom: 12 }}>Next 3 expiries to plan for</Caption1>
           {!hasPayments ? (
-            <Body1 style={{ color: '#64748b' }}>No upcoming payments.</Body1>
+            <Body1 style={{ color: C.muted }}>No upcoming payments.</Body1>
           ) : (
-            <ul style={{ margin: 0, paddingLeft: 20, color: '#475569', lineHeight: 1.8 }}>
+            <ul style={{ margin: 0, paddingLeft: 20, color: C.textSoft, lineHeight: 1.8 }}>
               {paymentLines.map((line) => (
                 <li key={line.contract_id}>
                   <Text weight="semibold">{line.party}</Text>
-                  <Caption1 block style={{ color: '#64748b' }}>{line.detail}</Caption1>
+                  <Caption1 block style={{ color: C.muted }}>{line.detail}</Caption1>
                 </li>
               ))}
             </ul>
@@ -100,33 +111,35 @@ export function AnalyticsPage() {
 
       {/* Risk Assessment */}
       <Card style={{ marginBottom: 24 }}>
-        <Text size={500} weight="semibold" block style={{ marginBottom: 16 }}>Risk Assessment</Text>
+        <Text size={500} weight="bold" block style={{ marginBottom: 16, fontFamily: FONT.heading }}>Risk</Text>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16, marginBottom: 20 }}>
-          <Card style={{ borderColor: '#f59e0b', background: '#fffbeb' }}>
+          <Card style={{ borderColor: `${C.warn}55`, background: C.warnSoft }}>
             <Text size={500} weight="semibold" block>{analytics.autoRenewalCount}</Text>
-            <Caption1 block style={{ color: '#64748b' }}>Auto-Renewal Tracker</Caption1>
+            <Caption1 block style={{ color: C.muted }}>Renew automatically</Caption1>
           </Card>
           <Card>
             <Text size={500} weight="semibold" block>{analytics.noticeAvg} days</Text>
-            <Caption1 block style={{ color: '#64748b' }}>Termination Notice Avg</Caption1>
+            <Caption1 block style={{ color: C.muted }}>Average notice period</Caption1>
           </Card>
         </div>
         <Card style={{ padding: 16 }}>
-          <Text size={400} weight="semibold" block style={{ marginBottom: 8 }}>Risk Heatmap</Text>
+          <Text size={400} weight="semibold" block style={{ marginBottom: 8 }}>Flagged terms</Text>
           {!hasRisks ? (
-            <Body1 style={{ color: '#64748b' }}>No red flags detected in contracts.</Body1>
+            <Body1 style={{ color: C.muted }}>No flagged terms across your contracts.</Body1>
           ) : (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {analytics.riskCounts.map(([flag, count]) => (
                 <span
                   key={flag}
                   style={{
-                    background: '#fef2f2',
-                    color: '#b91c1c',
-                    padding: '6px 12px',
-                    borderRadius: 8,
-                    fontSize: 13,
-                    fontWeight: 600,
+                    background: C.dangerSoft,
+                    color: C.danger,
+                    border: `1px solid ${C.danger}33`,
+                    padding: '4px 10px',
+                    borderRadius: 4,
+                    fontFamily: FONT.mono,
+                    fontSize: 12.5,
+                    fontWeight: 500,
                   }}
                 >
                   {flag.replace(/_/g, ' ')}: {count}
@@ -139,12 +152,12 @@ export function AnalyticsPage() {
 
       {/* Expiry Pipeline */}
       <Card style={{ marginBottom: 24 }}>
-        <Text size={500} weight="semibold" block style={{ marginBottom: 16 }}>Expiry Pipeline</Text>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, flexWrap: 'wrap' }}>
+        <Text size={500} weight="bold" block style={{ marginBottom: 16, fontFamily: FONT.heading }}>Expiry pipeline</Text>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
           <Card style={{ padding: 16 }}>
-            <Text size={400} weight="semibold" block style={{ marginBottom: 12 }}>Expiry Clusters</Text>
+            <Text size={400} weight="semibold" block style={{ marginBottom: 12 }}>Expiries by quarter</Text>
             {!hasClusters ? (
-              <Body1 style={{ color: '#64748b' }}>No expiries in the pipeline.</Body1>
+              <Body1 style={{ color: C.muted }}>No expiries in the pipeline.</Body1>
             ) : (
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, minHeight: 120 }}>
                 {analytics.expiryClusters.map(({ quarter, count }) => (
@@ -155,8 +168,8 @@ export function AnalyticsPage() {
                           width: '100%',
                           maxWidth: 40,
                           height: `${getBarHeightPct(count, maxClusterCount)}%`,
-                          background: 'linear-gradient(180deg, #6366f1, #8b5cf6)',
-                          borderRadius: '8px 8px 0 0',
+                          background: C.emerald,
+                          borderRadius: '3px 3px 0 0',
                         }}
                       />
                     </div>
@@ -168,14 +181,14 @@ export function AnalyticsPage() {
             )}
           </Card>
           <Card style={{ padding: 16 }}>
-            <Text size={400} weight="semibold" block style={{ marginBottom: 12 }}>Next Big Expiry</Text>
+            <Text size={400} weight="semibold" block style={{ marginBottom: 12 }}>Next to expire</Text>
             {!nextBig ? (
-              <Body1 style={{ color: '#64748b' }}>No upcoming expiries.</Body1>
+              <Body1 style={{ color: C.muted }}>No upcoming expiries.</Body1>
             ) : (
-              <Card style={{ padding: 16, background: '#f8fafc' }}>
+              <Card style={{ padding: 16, background: C.slate }}>
                 <Text size={400} weight="bold" block style={{ marginBottom: 4 }}>{nextBig.party}</Text>
                 <Caption1 block style={{ marginBottom: 4 }}>{nextBig.subject}</Caption1>
-                <Text size={400} weight="semibold" style={{ color: '#6366f1' }}>
+                <Text size={400} weight="semibold" style={{ color: C.emerald }}>
                   Expires: {formatExpiryDate(nextBig.expiry)}
                 </Text>
                 {nextBig.annual_value > 0 && (
@@ -191,12 +204,12 @@ export function AnalyticsPage() {
 
       {/* Vendor Concentration */}
       <Card style={{ marginBottom: 24 }}>
-        <Text size={500} weight="semibold" block style={{ marginBottom: 16 }}>Vendor Concentration</Text>
+        <Text size={500} weight="bold" block style={{ marginBottom: 16, fontFamily: FONT.heading }}>Vendor concentration</Text>
         <Card style={{ padding: 16 }}>
-          <Text size={400} weight="semibold" block style={{ marginBottom: 4 }}>Top Counterparties</Text>
-          <Caption1 block style={{ color: '#64748b', marginBottom: 12 }}>With whom you have the most contracts</Caption1>
+          <Text size={400} weight="semibold" block style={{ marginBottom: 4 }}>Top counterparties</Text>
+          <Caption1 block style={{ color: C.muted, marginBottom: 12 }}>Who you hold the most contracts with</Caption1>
           {!hasCounterparties ? (
-            <Body1 style={{ color: '#64748b' }}>No contracts yet.</Body1>
+            <Body1 style={{ color: C.muted }}>No contracts yet.</Body1>
           ) : (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'flex-start' }}>
               <div
@@ -207,7 +220,7 @@ export function AnalyticsPage() {
                   background: getConicGradient(analytics.topCounterparties),
                 }}
               />
-              <ul style={{ flex: 1, minWidth: 200, margin: 0, paddingLeft: 20, color: '#475569', lineHeight: 1.8 }}>
+              <ul style={{ flex: 1, minWidth: 200, margin: 0, paddingLeft: 20, color: C.textSoft, lineHeight: 1.8 }}>
                 {analytics.topCounterparties.map((p) => (
                   <li key={p.name}>
                     <Text weight="semibold">{p.name}</Text>

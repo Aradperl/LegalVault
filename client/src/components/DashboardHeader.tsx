@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Title1, Body1, Input, Card } from '@fluentui/react-components';
+import { FileUp, Loader2 } from 'lucide-react';
 import * as S from '../AppStyles';
+import { C } from '../theme';
 
 interface DashboardHeaderProps {
   loading: boolean;
@@ -50,16 +52,16 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     }
   };
 
-  const uploadLabelText = loading ? 'AI is analyzing document...' : 'Click to upload or drag & drop a PDF';
+  const uploadLabelText = loading ? 'Reading your contract…' : 'Drop a PDF here, or click to choose a file';
 
   return (
     <>
       <header style={S.heroSection}>
         <Title1 block style={S.heroTitle as React.CSSProperties}>
-          Your Contracts, <span style={S.gradientText}>Simplified.</span>
+          Add a contract to your vault
         </Title1>
         <Body1 block style={S.heroSub as React.CSSProperties}>
-          Upload PDFs and let AI extract key insights and manage deadlines for you.
+          Upload a PDF. LegalVault pulls out the parties, dates and fees, flags risky terms, and keeps track of the deadlines.
         </Body1>
         <Card
           style={{ ...S.uploadArea, ...(dragActive ? S.uploadAreaDragActive : {}) }}
@@ -77,8 +79,11 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             style={{ display: 'none' }}
           />
           <label htmlFor="file" style={{ ...S.uploadLabel, cursor: 'pointer', margin: 0 }}>
-            <div style={S.iconCircle}>{loading ? '⚙️' : '📁'}</div>
-            <span style={{ fontWeight: 600 }}>{uploadLabelText}</span>
+            <div style={S.iconCircle}>
+              {loading ? <Loader2 size={24} strokeWidth={2} className="spin" aria-hidden /> : <FileUp size={24} strokeWidth={2} aria-hidden />}
+            </div>
+            <span style={{ fontWeight: 600, color: C.text }}>{uploadLabelText}</span>
+            {!loading && <span style={{ fontSize: 13, color: C.faint }}>PDF files only</span>}
           </label>
         </Card>
       </header>
@@ -93,13 +98,13 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             style={{ minWidth: 240 }}
           />
           <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <Body1 style={{ color: '#64748b', fontWeight: 600 }}>Sort by:</Body1>
+            <Body1 style={{ color: C.muted, fontWeight: 500 }}>Sort by</Body1>
             <select
               style={S.sortSelectStyle}
               value={sortBy}
               onChange={(e) => onSortChange(e.target.value)}
             >
-              <option value="timestamp">Upload Date</option>
+              <option value="timestamp">Upload date</option>
               <option value="alphabetical">Company (A-Z)</option>
               <option value="expiry">Expiration</option>
             </select>

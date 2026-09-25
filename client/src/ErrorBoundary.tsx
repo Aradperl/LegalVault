@@ -28,9 +28,9 @@ class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ padding: 40, fontFamily: 'sans-serif', textAlign: 'center' }}>
-          <Title1 block style={{ color: '#d32f2f', marginBottom: 16 }}>Something went wrong</Title1>
-          <Body1 block style={{ color: '#666', marginBottom: 20 }}>
+        <div style={{ padding: 40, textAlign: 'center', minHeight: '100vh', background: '#090E17', color: '#E2E8F0' }}>
+          <Title1 block style={{ color: '#F87171', marginBottom: 16 }}>Something went wrong</Title1>
+          <Body1 block style={{ color: '#94A3B8', marginBottom: 20 }}>
             {this.state.error?.message || 'An unexpected error occurred'}
           </Body1>
           <Button
@@ -40,11 +40,11 @@ class ErrorBoundary extends Component<Props, State> {
               window.location.reload();
             }}
           >
-            Reload Page
+            Reload page
           </Button>
           <details style={{ marginTop: 20, textAlign: 'left' }}>
-            <summary style={{ cursor: 'pointer', color: '#6366f1' }}>Error Details</summary>
-            <pre style={{ background: '#f5f5f5', padding: 10, borderRadius: 4, overflow: 'auto' }}>
+            <summary style={{ cursor: 'pointer', color: '#14B8A6' }}>Error details</summary>
+            <pre style={{ background: '#1E293B', padding: 10, borderRadius: 4, overflow: 'auto', fontFamily: '"JetBrains Mono", monospace' }}>
               {this.state.error?.stack}
             </pre>
           </details>
