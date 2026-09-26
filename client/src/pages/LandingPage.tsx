@@ -1,5 +1,5 @@
 import type { CSSProperties, FormEvent } from 'react';
-import { FileSearch, ShieldAlert, CalendarClock } from 'lucide-react';
+import { FileSearch, ShieldAlert, Folder, BarChart3, CalendarClock } from 'lucide-react';
 import { C, FONT } from '../theme';
 
 interface LandingPageProps {
@@ -22,8 +22,8 @@ const CLAUSES: { ref: string; title: string; text: string; tag: string; tone: To
   {
     ref: '§2',
     title: 'Term',
-    text: 'This Agreement commences on 1 April 2025 and remains in force until 31 March 2027 unless terminated earlier.',
-    tag: 'expiry: 2027-03-31',
+    text: 'This Agreement commences on 1 April 2026 and remains in force until 31 March 2028 unless terminated earlier.',
+    tag: 'expiry: 2028-03-31',
     tone: 'ok',
   },
   {
@@ -49,6 +49,24 @@ const CLAUSES: { ref: string; title: string; text: string; tag: string; tone: To
   },
 ];
 
+const HUD_FIELDS: { key: string; value: string; tone?: Tone }[] = [
+  { key: 'subject', value: 'Master Services Agreement' },
+  { key: 'party', value: 'Harbor & Pine LLP' },
+  { key: 'expiry', value: '2028-03-31' },
+  { key: 'annual_value', value: '48000' },
+  { key: 'has_auto_renewal', value: 'true', tone: 'warn' },
+  { key: 'is_signed', value: 'false', tone: 'warn' },
+  { key: 'risk_flags', value: 'auto_renewal', tone: 'risk' },
+];
+
+const FEATURES = [
+  { icon: FileSearch, label: 'AI extraction' },
+  { icon: ShieldAlert, label: 'Risk flags' },
+  { icon: Folder, label: 'Folders' },
+  { icon: BarChart3, label: 'Analytics' },
+  { icon: CalendarClock, label: 'Calendar + email' },
+];
+
 const TONE: Record<Tone, { color: string; bg: string }> = {
   ok: { color: C.emerald, bg: C.emeraldSoft },
   warn: { color: C.warn, bg: C.warnSoft },
@@ -56,29 +74,29 @@ const TONE: Record<Tone, { color: string; bg: string }> = {
 };
 
 // Scan runs 0.4s → 3.0s across the page; tags appear as the line reaches them
-const tagDelay = (i: number) => `${0.9 + i * 0.52}s`;
+const tagDelay = (i: number) => `${1.2 + i * 0.7}s`;
 
 function Specimen() {
   return (
     <div className="specimen" aria-label="Example: a services agreement with extracted terms">
       <div className="specimen-scan" aria-hidden />
 
-      <div style={{ fontFamily: FONT.mono, fontSize: 11, color: C.faint, marginBottom: 18 }}>
-        msa_northwind_2025.pdf
+      <div className="specimen-file" style={{ fontFamily: FONT.mono, color: C.faint }}>
+        msa_northwind_2026.pdf
       </div>
-      <h2 style={{ fontFamily: FONT.heading, fontSize: 20, fontWeight: 700, color: C.text, margin: '0 0 6px', letterSpacing: '-0.01em' }}>
+      <h2 className="specimen-title" style={{ fontFamily: FONT.heading, fontWeight: 700, color: C.text, margin: '0 0 4px', letterSpacing: '-0.01em' }}>
         Master Services Agreement
       </h2>
-      <p style={{ fontSize: 13, color: C.muted, margin: '0 0 24px', lineHeight: 1.6 }}>
+      <p className="specimen-parties" style={{ color: C.muted, margin: 0, lineHeight: 1.5 }}>
         Between Northwind Analytics Ltd. (“Provider”) and Harbor &amp; Pine LLP (“Client”).
       </p>
 
-      <ol style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <ol className="specimen-clauses">
         {CLAUSES.map((c, i) => (
-          <li key={c.ref} style={{ display: 'grid', gridTemplateColumns: '44px 1fr', gap: 12 }}>
-            <span style={{ fontFamily: FONT.mono, fontSize: 12, color: C.faint, paddingTop: 2 }}>{c.ref}</span>
+          <li key={c.ref} className="specimen-clause">
+            <span style={{ fontFamily: FONT.mono, color: C.faint, paddingTop: 2 }}>{c.ref}</span>
             <div style={{ minWidth: 0 }}>
-              <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.65, color: C.textSoft }}>
+              <p style={{ margin: 0, lineHeight: 1.55, color: C.textSoft }}>
                 <strong style={{ color: C.text, fontWeight: 600 }}>{c.title}. </strong>
                 {c.text}
               </p>
@@ -86,14 +104,13 @@ function Specimen() {
                 className="clause-tag"
                 style={{
                   display: 'inline-block',
-                  marginTop: 8,
+                  marginTop: 6,
                   fontFamily: FONT.mono,
-                  fontSize: 11.5,
                   color: TONE[c.tone].color,
                   background: TONE[c.tone].bg,
                   border: `1px solid ${TONE[c.tone].color}33`,
                   borderRadius: 4,
-                  padding: '3px 8px',
+                  padding: '2px 7px',
                   animationDelay: tagDelay(i),
                   maxWidth: '100%',
                   overflowWrap: 'anywhere',
@@ -106,11 +123,11 @@ function Specimen() {
         ))}
       </ol>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 28, paddingTop: 20, borderTop: `1px dashed ${C.lineStrong}` }}>
+      <div className="specimen-sign" style={{ borderTop: `1px dashed ${C.lineStrong}` }}>
         {['For Provider', 'For Client'].map((who) => (
           <div key={who}>
-            <div style={{ height: 22, borderBottom: `1px solid ${C.lineStrong}` }} />
-            <div style={{ fontSize: 11.5, color: C.faint, marginTop: 6 }}>{who}</div>
+            <div style={{ height: 18, borderBottom: `1px solid ${C.lineStrong}` }} />
+            <div style={{ fontSize: 11, color: C.faint, marginTop: 4 }}>{who}</div>
           </div>
         ))}
       </div>
@@ -118,57 +135,75 @@ function Specimen() {
         className="clause-tag"
         style={{
           display: 'inline-block',
-          marginTop: 12,
+          marginTop: 8,
           fontFamily: FONT.mono,
-          fontSize: 11.5,
           color: C.warn,
           background: C.warnSoft,
           border: `1px solid ${C.warn}33`,
           borderRadius: 4,
-          padding: '3px 8px',
+          padding: '2px 7px',
           animationDelay: tagDelay(CLAUSES.length),
         }}
       >
         signed: false
       </span>
+
+      <aside className="specimen-hud" aria-label="Extracted contract fields">
+        <div className="specimen-hud-label" style={{ fontFamily: FONT.mono, color: C.emerald }}>
+          extracted
+        </div>
+        <dl className="specimen-hud-grid">
+          {HUD_FIELDS.map((field) => {
+            const tone = field.tone ? TONE[field.tone] : null;
+            return (
+              <div key={field.key} className="specimen-hud-row">
+                <dt style={{ fontFamily: FONT.mono, color: C.faint }}>{field.key}</dt>
+                <dd
+                  style={{
+                    fontFamily: FONT.mono,
+                    color: tone?.color ?? C.textSoft,
+                    margin: 0,
+                  }}
+                >
+                  {field.value}
+                </dd>
+              </div>
+            );
+          })}
+        </dl>
+      </aside>
     </div>
   );
 }
 
 // --- Auth form styles
-const labelStyle: CSSProperties = { display: 'block', fontSize: 13, fontWeight: 500, color: C.textSoft, marginBottom: 6 };
+const labelStyle: CSSProperties = { display: 'block', fontSize: 12.5, fontWeight: 500, color: C.textSoft, marginBottom: 5 };
 
 const inputStyle: CSSProperties = {
   width: '100%',
-  padding: '12px 14px',
+  padding: '10px 12px',
   borderRadius: 8,
   border: `1px solid ${C.lineStrong}`,
   background: C.panel,
   color: C.text,
-  fontSize: 15,
+  fontSize: 14,
   outline: 'none',
   transition: 'border-color 0.15s, box-shadow 0.15s',
 };
 
 const primaryBtn: CSSProperties = {
   width: '100%',
-  padding: '13px 16px',
+  padding: '11px 16px',
   borderRadius: 8,
   border: 'none',
   background: C.teal,
   color: '#fff',
   fontFamily: FONT.heading,
   fontWeight: 700,
-  fontSize: 15,
+  fontSize: 14,
   cursor: 'pointer',
-  marginTop: 6,
+  marginTop: 4,
 };
-
-const FACTS = [
-  { icon: FileSearch, text: 'Pulls parties, dates and fees from any contract PDF' },
-  { icon: ShieldAlert, text: 'Flags auto-renewals, uncapped liability and missing signatures' },
-  { icon: CalendarClock, text: 'Emails you and adds calendar reminders before a contract expires' },
-];
 
 export function LandingPage(props: LandingPageProps) {
   const { authMode, loading } = props;
@@ -181,38 +216,49 @@ export function LandingPage(props: LandingPageProps) {
 
   return (
     <div className="landing">
-      <header style={{ maxWidth: 1240, width: '100%', margin: '0 auto', padding: '24px clamp(16px, 4vw, 48px)', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <img src="/logo-mark.png" alt="" width={40} height={35} style={{ objectFit: 'contain' }} />
-        <span style={{ fontFamily: FONT.heading, fontWeight: 800, fontSize: 19, letterSpacing: '0.06em', color: C.text }}>
+      <header className="landing-header landing-in">
+        <img src="/logo-mark.png" alt="" width={36} height={32} style={{ objectFit: 'contain' }} />
+        <span style={{ fontFamily: FONT.heading, fontWeight: 800, fontSize: 18, letterSpacing: '0.06em', color: C.text }}>
           LEGALVAULT
         </span>
       </header>
 
       <main className="landing-main">
-        <section style={{ maxWidth: 480 }}>
-          <h1
-            style={{
-              fontFamily: FONT.heading,
-              fontSize: 'clamp(40px, 5.2vw, 64px)',
-              fontWeight: 800,
-              lineHeight: 1.04,
-              letterSpacing: '-0.03em',
-              color: C.text,
-              margin: '0 0 20px',
-            }}
-          >
-            Every clause, accounted for.
-          </h1>
-          <p style={{ fontSize: 17, lineHeight: 1.6, color: C.muted, margin: '0 0 36px', maxWidth: 440 }}>
-            Upload a contract and LegalVault reads it for you: who it’s with, what it costs, when it ends, and which terms deserve a second look.
-          </p>
+        <section className="landing-left">
+          <div className="landing-story">
+            <p className="landing-in landing-kicker">
+              For the contracts you still have to live with
+            </p>
+            <h1 className="landing-headline">
+              <span className="landing-line">
+                <span className="landing-word" style={{ animationDelay: '0.28s' }}>Every</span>
+                <span className="landing-word" style={{ animationDelay: '0.46s' }}>clause,</span>
+              </span>
+              <span className="landing-line">
+                <span className="landing-word" style={{ animationDelay: '0.66s' }}>accounted</span>
+                <span className="landing-word" style={{ animationDelay: '0.84s' }}>for.</span>
+              </span>
+            </h1>
+            <p className="landing-in landing-purpose">
+              You sign something, drop the PDF in a folder, and move on. Months later a renewal date appears, a fee ticks up, or nobody can say whether it was even signed.
+            </p>
 
-          <form onSubmit={submit} noValidate style={{ maxWidth: 400 }}>
-            <h2 style={{ fontFamily: FONT.heading, fontSize: 18, fontWeight: 700, margin: '0 0 18px', color: C.text }}>
+            <ul className="landing-chips" aria-label="Product capabilities">
+              {FEATURES.map(({ icon: Icon, label }, i) => (
+                <li key={label} className="landing-chip" style={{ animationDelay: `${1.05 + i * 0.12}s` }}>
+                  <Icon size={13} strokeWidth={2} color={C.emerald} aria-hidden />
+                  {label}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <form className="landing-form landing-in" onSubmit={submit} noValidate>
+            <h2 style={{ fontFamily: FONT.heading, fontSize: 16, fontWeight: 700, margin: '0 0 12px', color: C.text }}>
               {isLogin ? 'Sign in to your vault' : 'Create your vault'}
             </h2>
 
-            <div style={{ marginBottom: 14 }}>
+            <div style={{ marginBottom: 10 }}>
               <label htmlFor="lv-username" style={labelStyle}>Username</label>
               <input
                 id="lv-username"
@@ -224,7 +270,7 @@ export function LandingPage(props: LandingPageProps) {
               />
             </div>
             {!isLogin && (
-              <div style={{ marginBottom: 14 }}>
+              <div style={{ marginBottom: 10 }}>
                 <label htmlFor="lv-email" style={labelStyle}>Email</label>
                 <input
                   id="lv-email"
@@ -237,7 +283,7 @@ export function LandingPage(props: LandingPageProps) {
                 />
               </div>
             )}
-            <div style={{ marginBottom: 18 }}>
+            <div style={{ marginBottom: 14 }}>
               <label htmlFor="lv-password" style={labelStyle}>Password</label>
               <input
                 id="lv-password"
@@ -254,12 +300,12 @@ export function LandingPage(props: LandingPageProps) {
               {loading ? (isLogin ? 'Signing in…' : 'Creating account…') : isLogin ? 'Sign in' : 'Create account'}
             </button>
 
-            <p style={{ fontSize: 14, color: C.muted, margin: '18px 0 0' }}>
+            <p style={{ fontSize: 13, color: C.muted, margin: '14px 0 0' }}>
               {isLogin ? 'New to LegalVault? ' : 'Already have an account? '}
               <button
                 type="button"
                 onClick={props.onToggleMode}
-                style={{ background: 'none', border: 'none', padding: 0, color: C.emerald, fontWeight: 600, cursor: 'pointer', fontSize: 14 }}
+                style={{ background: 'none', border: 'none', padding: 0, color: C.emerald, fontWeight: 600, cursor: 'pointer', fontSize: 13 }}
               >
                 {isLogin ? 'Create an account' : 'Sign in'}
               </button>
@@ -267,31 +313,10 @@ export function LandingPage(props: LandingPageProps) {
           </form>
         </section>
 
-        <section className="specimen-wrap" style={{ minWidth: 0 }}>
+        <section className="specimen-wrap landing-in">
           <Specimen />
         </section>
       </main>
-
-      <footer style={{ borderTop: `1px solid ${C.slate}` }}>
-        <ul
-          style={{
-            listStyle: 'none',
-            margin: '0 auto',
-            maxWidth: 1240,
-            padding: '22px clamp(16px, 4vw, 48px)',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '14px 40px',
-          }}
-        >
-          {FACTS.map(({ icon: Icon, text }) => (
-            <li key={text} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', fontSize: 14, color: C.muted, lineHeight: 1.5 }}>
-              <Icon size={18} strokeWidth={2} color={C.emerald} style={{ flexShrink: 0, marginTop: 1 }} aria-hidden />
-              {text}
-            </li>
-          ))}
-        </ul>
-      </footer>
     </div>
   );
 }
