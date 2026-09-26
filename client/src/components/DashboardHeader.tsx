@@ -13,6 +13,7 @@ interface DashboardHeaderProps {
   sortBy?: string;
   onSortChange?: (val: string) => void;
   showFilterBar?: boolean;
+  greeting?: string;
 }
 
 function preventDefault(e: React.DragEvent) {
@@ -29,6 +30,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   sortBy = 'timestamp',
   onSortChange = () => {},
   showFilterBar = true,
+  greeting,
 }) => {
   const [dragActive, setDragActive] = useState(false);
 
@@ -58,7 +60,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     <>
       <header style={S.heroSection}>
         <Title1 block style={S.heroTitle as React.CSSProperties}>
-          Add a contract to your vault
+          {greeting || 'Add a contract to your vault'}
         </Title1>
         <Body1 block style={S.heroSub as React.CSSProperties}>
           Upload a PDF. LegalVault pulls out the parties, dates and fees, flags risky terms, and keeps track of the deadlines.

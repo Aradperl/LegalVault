@@ -2,10 +2,24 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { FluentProvider } from '@fluentui/react-components'
-import { legalVaultTheme } from './theme'
+import { legalVaultDarkTheme, legalVaultLightTheme } from './theme'
+import { ThemeProvider, useTheme } from './context/ThemeContext'
 import './index.css'
 import App from './App.tsx'
 import ErrorBoundary from './ErrorBoundary.tsx'
+
+function ThemedApp() {
+  const { theme } = useTheme()
+  return (
+    <FluentProvider theme={theme === 'light' ? legalVaultLightTheme : legalVaultDarkTheme}>
+      <ErrorBoundary>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ErrorBoundary>
+    </FluentProvider>
+  )
+}
 
 const rootElement = document.getElementById('root')
 if (!rootElement) {
@@ -15,13 +29,9 @@ if (!rootElement) {
 try {
   createRoot(rootElement).render(
     <StrictMode>
-      <FluentProvider theme={legalVaultTheme}>
-        <ErrorBoundary>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </ErrorBoundary>
-      </FluentProvider>
+      <ThemeProvider>
+        <ThemedApp />
+      </ThemeProvider>
     </StrictMode>,
   )
 } catch (error) {

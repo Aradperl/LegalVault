@@ -1,5 +1,6 @@
 import type { CSSProperties, FormEvent } from 'react';
 import { FileSearch, ShieldAlert, Folder, BarChart3, CalendarClock } from 'lucide-react';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { C, FONT } from '../theme';
 
 interface LandingPageProps {
@@ -59,6 +60,12 @@ const HUD_FIELDS: { key: string; value: string; tone?: Tone }[] = [
   { key: 'risk_flags', value: 'auto_renewal', tone: 'risk' },
 ];
 
+const FACTS = [
+  { icon: FileSearch, text: 'Pulls parties, dates and fees from any contract PDF' },
+  { icon: ShieldAlert, text: 'Flags auto-renewals, uncapped liability and missing signatures' },
+  { icon: CalendarClock, text: 'Emails you and adds calendar reminders before a contract expires' },
+];
+
 const FEATURES = [
   { icon: FileSearch, label: 'AI extraction' },
   { icon: ShieldAlert, label: 'Risk flags' },
@@ -108,7 +115,7 @@ function Specimen() {
                   fontFamily: FONT.mono,
                   color: TONE[c.tone].color,
                   background: TONE[c.tone].bg,
-                  border: `1px solid ${TONE[c.tone].color}33`,
+                  border: `1px solid ${c.tone === 'ok' ? 'var(--emerald-ring)' : c.tone === 'warn' ? C.warnRing : C.dangerRing}`,
                   borderRadius: 4,
                   padding: '2px 7px',
                   animationDelay: tagDelay(i),
@@ -139,7 +146,7 @@ function Specimen() {
           fontFamily: FONT.mono,
           color: C.warn,
           background: C.warnSoft,
-          border: `1px solid ${C.warn}33`,
+          border: `1px solid ${C.warnRing}`,
           borderRadius: 4,
           padding: '2px 7px',
           animationDelay: tagDelay(CLAUSES.length),
@@ -216,16 +223,13 @@ export function LandingPage(props: LandingPageProps) {
 
   return (
     <div className="landing">
-      <header className="landing-header landing-in">
-        <img src="/logo-mark.png" alt="" width={36} height={32} style={{ objectFit: 'contain' }} />
-        <span style={{ fontFamily: FONT.heading, fontWeight: 800, fontSize: 18, letterSpacing: '0.06em', color: C.text }}>
-          LEGALVAULT
-        </span>
-      </header>
-
       <main className="landing-main">
         <section className="landing-left">
           <div className="landing-story">
+            <div className="landing-brand landing-in">
+              <img className="logo-mark landing-logo-mark" src="/logo-mark.png" alt="" width={60} height={54} />
+              <span className="landing-wordmark">LEGALVAULT</span>
+            </div>
             <p className="landing-in landing-kicker">
               For the contracts you still have to live with
             </p>
@@ -254,9 +258,12 @@ export function LandingPage(props: LandingPageProps) {
           </div>
 
           <form className="landing-form landing-in" onSubmit={submit} noValidate>
-            <h2 style={{ fontFamily: FONT.heading, fontSize: 16, fontWeight: 700, margin: '0 0 12px', color: C.text }}>
-              {isLogin ? 'Sign in to your vault' : 'Create your vault'}
-            </h2>
+            <div className="landing-form-head">
+              <h2 style={{ fontFamily: FONT.heading, fontSize: 16, fontWeight: 700, margin: 0, color: C.text }}>
+                {isLogin ? 'Sign in to your vault' : 'Create your vault'}
+              </h2>
+              <ThemeToggle />
+            </div>
 
             <div style={{ marginBottom: 10 }}>
               <label htmlFor="lv-username" style={labelStyle}>Username</label>
@@ -283,7 +290,7 @@ export function LandingPage(props: LandingPageProps) {
                 />
               </div>
             )}
-            <div style={{ marginBottom: 14 }}>
+            <div style={{ marginBottom: isLogin ? 14 : 8 }}>
               <label htmlFor="lv-password" style={labelStyle}>Password</label>
               <input
                 id="lv-password"
@@ -295,6 +302,14 @@ export function LandingPage(props: LandingPageProps) {
                 autoComplete={isLogin ? 'current-password' : 'new-password'}
               />
             </div>
+            {!isLogin && (
+              <ul className="signup-rules" aria-label="Account requirements">
+                <li>Username: at least 3 characters; letters, numbers, _ or -</li>
+                <li>Valid email address</li>
+                <li>Password: 10+ characters, with a letter and a number</li>
+                <li>Avoid obvious passwords (password, qwerty, letmein, …)</li>
+              </ul>
+            )}
 
             <button type="submit" disabled={loading} style={primaryBtn} className="btn-primary">
               {loading ? (isLogin ? 'Signing in…' : 'Creating account…') : isLogin ? 'Sign in' : 'Create account'}
@@ -317,6 +332,17 @@ export function LandingPage(props: LandingPageProps) {
           <Specimen />
         </section>
       </main>
+
+      <footer className="landing-footer landing-in">
+        <ul className="landing-facts">
+          {FACTS.map(({ icon: Icon, text }) => (
+            <li key={text} className="landing-fact">
+              <Icon size={13} strokeWidth={2} color={C.emerald} aria-hidden />
+              {text}
+            </li>
+          ))}
+        </ul>
+      </footer>
     </div>
   );
 }

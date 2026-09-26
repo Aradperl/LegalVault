@@ -5,6 +5,7 @@ export const API_BASE =
 
 const TOKEN_KEY = 'access_token';
 const USER_ID_KEY = 'user_id';
+export const LAST_ACTIVITY_KEY = 'last_activity_at';
 
 function safeLocalStorageGet(key: string): string | null {
   try {
@@ -31,6 +32,7 @@ export function clearAuth(): void {
   try {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_ID_KEY);
+    localStorage.removeItem(LAST_ACTIVITY_KEY);
   } catch {
     // ignore
   }

@@ -55,7 +55,7 @@ export const ContractCard: React.FC<ContractCardProps> = ({
   const cardActionsFinal = compact ? { ...S.cardActions, marginTop: 10, gap: 6, flexWrap: 'wrap' as const } : S.cardActions;
   const notSignedStyle = {
     marginTop: 10, padding: compact ? '3px 8px' : '4px 10px', borderRadius: 4, background: C.warnSoft,
-    border: `1px solid ${C.warn}33`, fontSize: compact ? 11.5 : 12.5, fontWeight: 500, color: C.warn,
+    border: `1px solid ${C.warnRing}`, fontSize: compact ? 11.5 : 12.5, fontWeight: 500, color: C.warn,
     display: 'inline-block' as const, width: 'fit-content',
   };
   const alertSelectStyle = compact ? { ...S.miniSelect, width: 72, minWidth: 72, padding: '6px 6px' } : { ...S.miniSelect, width: 88, minWidth: 88 };
@@ -106,7 +106,7 @@ export const ContractCard: React.FC<ContractCardProps> = ({
             {details.risk_flags.map((flag) => (
               <span
                 key={flag}
-                style={{ background: C.dangerSoft, color: C.danger, border: `1px solid ${C.danger}33`, padding: compact ? '2px 7px' : '3px 9px', borderRadius: 4, fontSize: compact ? 11 : 12, fontWeight: 500 }}
+                style={{ background: C.dangerSoft, color: C.danger, border: `1px solid ${C.dangerRing}`, padding: compact ? '2px 7px' : '3px 9px', borderRadius: 4, fontSize: compact ? 11 : 12, fontWeight: 500 }}
               >
                 {riskFlagLabel(flag)}
               </span>

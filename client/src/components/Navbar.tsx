@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Avatar } from '@fluentui/react-components';
+import { ThemeToggle } from './ThemeToggle';
 import { C, FONT } from '../theme';
 
 interface NavbarProps {
@@ -15,7 +16,7 @@ const navbarStyle: React.CSSProperties = {
   justifyContent: 'space-between',
   height: 72,
   padding: '0 28px',
-  background: 'rgba(9, 14, 23, 0.92)',
+  background: 'var(--nav-bg)',
   backdropFilter: 'blur(8px)',
   borderBottom: `1px solid ${C.slate}`,
 };
@@ -49,7 +50,7 @@ const googleStatusStyle: React.CSSProperties = {
 export const Navbar: React.FC<NavbarProps> = ({ isGoogleConnected, userPicture, currentUser, onGoogleConnect }) => (
   <nav style={navbarStyle}>
     <div style={logoStyle}>
-      <img src="/logo-mark.png" alt="" width={38} height={33} style={{ objectFit: 'contain' }} />
+      <img className="logo-mark" src="/logo-mark.png" alt="" width={38} height={33} />
       <span style={wordmarkStyle}>LEGALVAULT</span>
     </div>
     <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
@@ -64,6 +65,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isGoogleConnected, userPicture, 
         </Button>
       )}
       <span style={{ width: 1, height: 24, background: C.slate }} />
+      <ThemeToggle />
       <Avatar
         name={currentUser}
         color="brand"

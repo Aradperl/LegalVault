@@ -1,14 +1,70 @@
-:root {
+:root,
+[data-theme="dark"] {
   color-scheme: dark;
   --vault: #090E17;
   --panel: #0F1724;
   --slate: #1E293B;
+  --line: #1E293B;
   --line-strong: #2B3A52;
   --text: #E2E8F0;
+  --text-soft: #CBD5E1;
   --muted: #94A3B8;
+  --faint: #64748B;
   --teal: #0D9488;
   --emerald: #14B8A6;
+  --emerald-soft: rgba(20, 184, 166, 0.12);
+  --emerald-ring: rgba(20, 184, 166, 0.2);
   --cyber: #0EA5E9;
+  --cyber-soft: rgba(14, 165, 233, 0.12);
+  --danger: #F87171;
+  --danger-strong: #DC2626;
+  --danger-soft: rgba(248, 113, 113, 0.12);
+  --danger-ring: rgba(248, 113, 113, 0.2);
+  --warn: #FBBF24;
+  --warn-soft: rgba(251, 191, 36, 0.12);
+  --warn-ring: rgba(251, 191, 36, 0.2);
+  --nav-bg: rgba(9, 14, 23, 0.92);
+  --nav-hover: rgba(30, 41, 59, 0.6);
+  --row-hover: rgba(30, 41, 59, 0.5);
+  --chip-bg: rgba(15, 23, 36, 0.85);
+  --specimen-bg: #0C1320;
+  --specimen-hud-bg: rgba(9, 14, 23, 0.9);
+  --landing-glow: rgba(13, 148, 136, 0.10);
+  --landing-orb: rgba(20, 184, 166, 0.16);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --vault: #F3F6F8;
+  --panel: #FFFFFF;
+  --slate: #E2E8F0;
+  --line: #E2E8F0;
+  --line-strong: #CBD5E1;
+  --text: #0F172A;
+  --text-soft: #1E293B;
+  --muted: #475569;
+  --faint: #64748B;
+  --teal: #0D9488;
+  --emerald: #0F766E;
+  --emerald-soft: rgba(13, 148, 136, 0.10);
+  --emerald-ring: rgba(13, 148, 136, 0.28);
+  --cyber: #0284C7;
+  --cyber-soft: rgba(2, 132, 199, 0.10);
+  --danger: #DC2626;
+  --danger-strong: #B91C1C;
+  --danger-soft: rgba(220, 38, 38, 0.10);
+  --danger-ring: rgba(220, 38, 38, 0.28);
+  --warn: #B45309;
+  --warn-soft: rgba(180, 83, 9, 0.10);
+  --warn-ring: rgba(180, 83, 9, 0.28);
+  --nav-bg: rgba(243, 246, 248, 0.92);
+  --nav-hover: rgba(15, 23, 42, 0.06);
+  --row-hover: rgba(15, 23, 42, 0.04);
+  --chip-bg: #FFFFFF;
+  --specimen-bg: #FFFFFF;
+  --specimen-hud-bg: rgba(255, 255, 255, 0.94);
+  --landing-glow: rgba(13, 148, 136, 0.08);
+  --landing-orb: rgba(13, 148, 136, 0.12);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -64,7 +120,24 @@ a { color: var(--cyber); }
 .delete-trigger:hover .trash-lid { transform: translateY(-5px) rotate(-15deg); fill: #F87171; }
 .delete-trigger:hover .trash-base { fill: #F87171; }
 
-.nav-link:hover { color: var(--text) !important; background: rgba(30, 41, 59, 0.6); }
+.nav-link:hover { color: var(--text) !important; background: var(--nav-hover); }
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.theme-toggle:hover { background: var(--nav-hover); }
 
 .btn-primary { transition: background-color 0.15s ease; }
 .btn-primary:hover:not(:disabled) { background: #0F9E90 !important; }
@@ -87,11 +160,11 @@ body:has(.landing),
   height: 100dvh;
   max-height: 100dvh;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 1fr auto;
   grid-template-columns: minmax(0, 1fr);
   overflow: hidden;
   background:
-    radial-gradient(900px 500px at 85% 20%, rgba(13, 148, 136, 0.10), transparent 70%),
+    radial-gradient(900px 500px at 85% 20%, var(--landing-glow), transparent 70%),
     var(--vault);
 }
 
@@ -104,22 +177,51 @@ body:has(.landing),
   max-width: 720px;
   max-height: 720px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(20, 184, 166, 0.16), transparent 68%);
+  background: radial-gradient(circle, var(--landing-orb), transparent 68%);
   pointer-events: none;
   opacity: 0;
   transform: scale(0.86);
   animation: glowIn 1.8s ease-out 0.2s forwards;
 }
 
-.landing-header {
-  max-width: 1240px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 12px clamp(16px, 4vw, 48px) 8px;
+.logo-mark {
+  object-fit: contain;
+  display: block;
+}
+
+[data-theme="light"] .logo-mark {
+  /* Mark is drawn in pale ink for dark vaults; invert keeps the teal crown. */
+  filter: invert(1) hue-rotate(180deg) saturate(1.15) brightness(0.92) contrast(1.08);
+}
+
+.landing-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
+  margin: 0 0 14px;
   animation-delay: 0.06s;
+}
+
+.landing-logo-mark {
+  width: 60px;
+  height: 54px;
+}
+
+.landing-wordmark {
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+  font-weight: 800;
+  font-size: clamp(22px, 2.4vw, 28px);
+  letter-spacing: 0.06em;
+  color: var(--text);
+  line-height: 1;
+}
+
+.landing-form-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .landing-main {
@@ -131,7 +233,7 @@ body:has(.landing),
   width: 100%;
   min-height: 0;
   margin: 0 auto;
-  padding: 4px clamp(16px, 4vw, 48px) 16px;
+  padding: 16px clamp(16px, 4vw, 48px) 4px;
 }
 
 .landing-left {
@@ -142,9 +244,9 @@ body:has(.landing),
   min-height: 0;
   height: auto;
   max-width: 520px;
-  overflow: visible;
-  padding: 4px 0 8px;
-  gap: 22px;
+  overflow: hidden;
+  padding: 0;
+  gap: 14px;
 }
 
 .landing-story {
@@ -154,8 +256,8 @@ body:has(.landing),
 }
 
 .landing-kicker {
-  margin: 0 0 10px;
-  font-size: 13px;
+  margin: 0 0 8px;
+  font-size: 12.5px;
   font-weight: 600;
   letter-spacing: 0.01em;
   color: var(--emerald);
@@ -164,12 +266,12 @@ body:has(.landing),
 
 .landing-headline {
   font-family: "Plus Jakarta Sans", "Inter", sans-serif;
-  font-size: clamp(30px, 3.8vw, 48px);
+  font-size: clamp(26px, 3.4vw, 42px);
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -0.03em;
   color: var(--text);
-  margin: 0 0 14px;
+  margin: 0 0 10px;
 }
 
 .landing-line {
@@ -188,10 +290,10 @@ body:has(.landing),
 .landing-line .landing-word:last-child { margin-right: 0; }
 
 .landing-purpose {
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.55;
   color: var(--muted);
-  margin: 0 0 12px;
+  margin: 0 0 8px;
   max-width: 480px;
   animation-delay: 0.92s;
 }
@@ -212,7 +314,7 @@ body:has(.landing),
   font-size: 12px;
   line-height: 1;
   color: var(--muted);
-  background: rgba(15, 23, 36, 0.85);
+  background: var(--chip-bg);
   border: 1px solid var(--slate);
   border-radius: 999px;
   padding: 5px 9px;
@@ -221,6 +323,7 @@ body:has(.landing),
   animation: chipIn 0.7s ease-out forwards;
 }
 
+.landing-brand,
 .landing-kicker,
 .landing-headline,
 .landing-purpose,
@@ -235,6 +338,18 @@ body:has(.landing),
   overflow-y: auto;
   padding-right: 2px;
   animation-delay: 1.55s;
+}
+
+.signup-rules {
+  margin: 0 0 12px;
+  padding: 0 0 0 1.15em;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.signup-rules li + li {
+  margin-top: 3px;
 }
 
 .specimen-wrap.landing-in {
@@ -272,6 +387,34 @@ body:has(.landing),
   animation: landingIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.landing-footer {
+  width: 100%;
+  border-top: 1px solid var(--line);
+  animation-delay: 1.7s;
+}
+
+.landing-facts {
+  list-style: none;
+  margin: 0 auto;
+  max-width: 1240px;
+  padding: 7px clamp(16px, 4vw, 48px) 9px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px 24px;
+}
+
+.landing-fact {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  line-height: 1.3;
+  color: var(--muted);
+  min-width: 0;
+}
+
+.landing-fact svg { flex-shrink: 0; }
+
 @media (max-width: 960px) {
   html:has(.landing),
   body:has(.landing),
@@ -288,10 +431,11 @@ body:has(.landing),
     overflow-y: auto;
   }
 
-  .landing-main { grid-template-columns: 1fr; padding-bottom: 28px; }
+  .landing-main { grid-template-columns: 1fr; padding-bottom: 16px; }
   .landing-left { height: auto; max-width: none; overflow: visible; }
   .landing-form { max-height: none; overflow: visible; flex: none; }
   .specimen-wrap { order: 2; }
+  .landing-facts { grid-template-columns: 1fr; padding-bottom: 16px; gap: 8px; }
 }
 
 /* The specimen: a contract page being read, clause by clause */
@@ -306,7 +450,7 @@ body:has(.landing),
   position: relative;
   width: 100%;
   max-height: calc(100dvh - 72px);
-  background: #0C1320;
+  background: var(--specimen-bg);
   border: 1px solid var(--slate);
   border-radius: 6px;
   padding: 22px 24px 18px;
@@ -349,7 +493,7 @@ body:has(.landing),
   right: 10px;
   bottom: 10px;
   z-index: 3;
-  background: rgba(9, 14, 23, 0.9);
+  background: var(--specimen-hud-bg);
   border: 1px solid rgba(20, 184, 166, 0.28);
   border-radius: 6px;
   padding: 8px 10px 9px;
@@ -438,12 +582,29 @@ body:has(.landing),
 @keyframes tagIn { to { opacity: 1; transform: none; } }
 
 @media (max-height: 820px) {
-  .landing-headline { font-size: clamp(26px, 3.4vw, 38px); }
-  .landing-purpose { font-size: 14px; margin-bottom: 10px; }
+  .landing-main { padding-top: 12px; }
+  .landing-brand { margin-bottom: 10px; gap: 12px; }
+  .landing-logo-mark { width: 52px; height: 46px; }
+  .landing-wordmark { font-size: clamp(20px, 2.2vw, 24px); }
+  .landing-headline { font-size: clamp(24px, 3.2vw, 34px); }
+  .landing-purpose { font-size: 13.5px; margin-bottom: 6px; }
   .landing-chips { margin-top: 2px; }
-  .specimen { padding: 16px 18px 14px; max-height: calc(100dvh - 60px); }
-  .specimen-clauses { gap: 8px; }
-  .specimen-hud { padding: 7px 9px 8px; }
+  .landing-left { gap: 10px; }
+  .landing-facts { padding-top: 6px; padding-bottom: 7px; }
+  .specimen { padding: 14px 16px 12px; max-height: calc(100dvh - 64px); }
+  .specimen-clauses { gap: 7px; }
+  .specimen-hud { padding: 6px 8px 7px; }
+}
+
+@media (max-height: 720px) {
+  .landing-main { padding-top: 8px; }
+  .landing-brand { margin-bottom: 6px; }
+  .landing-logo-mark { width: 44px; height: 40px; }
+  .landing-kicker { margin-bottom: 4px; }
+  .landing-headline { font-size: clamp(22px, 2.8vw, 30px); margin-bottom: 6px; }
+  .landing-purpose { display: none; }
+  .landing-left { gap: 8px; }
+  .specimen { max-height: calc(100dvh - 56px); padding: 12px 14px 10px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -453,6 +614,7 @@ body:has(.landing),
   .landing-word,
   .landing-chip,
   .specimen-hud,
+  .landing-footer,
   .landing::before { animation: none; opacity: 1; transform: none; filter: none; }
   .specimen { animation: none; }
   .scanner-line { animation-duration: 6s; }
@@ -462,7 +624,7 @@ body:has(.landing),
 .spin { animation: spin 1s linear infinite; }
 
 .row-link { transition: background-color 0.15s ease; }
-.row-link:hover { background: rgba(30, 41, 59, 0.5); }
+.row-link:hover { background: var(--row-hover); }
 
 @media (max-width: 520px) {
   .specimen { padding: 16px 16px 14px; }

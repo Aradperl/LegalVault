@@ -1,26 +1,28 @@
-import { createDarkTheme, type BrandVariants, type Theme } from '@fluentui/react-components';
+import { createDarkTheme, createLightTheme, type BrandVariants, type Theme } from '@fluentui/react-components';
 
-// LegalVault brand palette (Brand Guidelines v1.0, dark theme default)
+// CSS custom properties (see index.css [data-theme]) so inline styles follow the toggle.
 export const C = {
-  vault: '#090E17',      // Vault Deep Dark: page background
-  panel: '#0F1724',      // one step up from vault, for cards and panels
-  slate: '#1E293B',      // Surface Slate: raised surfaces, inputs
-  line: '#1E293B',
-  lineStrong: '#2B3A52',
-  text: '#E2E8F0',       // Pure Text / Crisp
-  textSoft: '#CBD5E1',
-  muted: '#94A3B8',
-  faint: '#64748B',
-  teal: '#0D9488',       // Teal Accent: primary actions
-  emerald: '#14B8A6',    // Emerald Gold: highlights on dark
-  emeraldSoft: 'rgba(20, 184, 166, 0.12)',
-  cyber: '#0EA5E9',      // Cyber Blue: info, links
-  cyberSoft: 'rgba(14, 165, 233, 0.12)',
-  danger: '#F87171',
-  dangerStrong: '#DC2626',
-  dangerSoft: 'rgba(248, 113, 113, 0.12)',
-  warn: '#FBBF24',
-  warnSoft: 'rgba(251, 191, 36, 0.12)',
+  vault: 'var(--vault)',
+  panel: 'var(--panel)',
+  slate: 'var(--slate)',
+  line: 'var(--line)',
+  lineStrong: 'var(--line-strong)',
+  text: 'var(--text)',
+  textSoft: 'var(--text-soft)',
+  muted: 'var(--muted)',
+  faint: 'var(--faint)',
+  teal: 'var(--teal)',
+  emerald: 'var(--emerald)',
+  emeraldSoft: 'var(--emerald-soft)',
+  cyber: 'var(--cyber)',
+  cyberSoft: 'var(--cyber-soft)',
+  danger: 'var(--danger)',
+  dangerStrong: 'var(--danger-strong)',
+  dangerSoft: 'var(--danger-soft)',
+  warn: 'var(--warn)',
+  warnSoft: 'var(--warn-soft)',
+  warnRing: 'var(--warn-ring)',
+  dangerRing: 'var(--danger-ring)',
 };
 
 export const FONT = {
@@ -48,26 +50,53 @@ const teal: BrandVariants = {
   160: '#CCFBF1',
 };
 
-export const legalVaultTheme: Theme = {
+export const legalVaultDarkTheme: Theme = {
   ...createDarkTheme(teal),
   fontFamilyBase: FONT.body,
   fontFamilyMonospace: FONT.mono,
-  colorNeutralBackground1: C.panel,
+  colorNeutralBackground1: '#0F1724',
   colorNeutralBackground1Hover: '#152033',
-  colorNeutralBackground1Pressed: C.slate,
-  colorNeutralBackground2: C.vault,
-  colorNeutralBackground3: C.slate,
-  colorNeutralCardBackground: C.panel,
+  colorNeutralBackground1Pressed: '#1E293B',
+  colorNeutralBackground2: '#090E17',
+  colorNeutralBackground3: '#1E293B',
+  colorNeutralCardBackground: '#0F1724',
   colorNeutralCardBackgroundHover: '#131D2E',
-  colorNeutralCardBackgroundPressed: C.slate,
-  colorNeutralForeground1: C.text,
-  colorNeutralForeground2: C.textSoft,
-  colorNeutralForeground3: C.muted,
-  colorNeutralStroke1: C.lineStrong,
-  colorNeutralStroke2: C.line,
-  colorNeutralStrokeAccessible: C.muted,
-  colorBrandForegroundLink: C.cyber,
+  colorNeutralCardBackgroundPressed: '#1E293B',
+  colorNeutralForeground1: '#E2E8F0',
+  colorNeutralForeground2: '#CBD5E1',
+  colorNeutralForeground3: '#94A3B8',
+  colorNeutralStroke1: '#2B3A52',
+  colorNeutralStroke2: '#1E293B',
+  colorNeutralStrokeAccessible: '#94A3B8',
+  colorBrandForegroundLink: '#0EA5E9',
   colorBrandForegroundLinkHover: '#38BDF8',
   colorNeutralShadowAmbient: 'rgba(0,0,0,0.4)',
   colorNeutralShadowKey: 'rgba(0,0,0,0.5)',
 };
+
+export const legalVaultLightTheme: Theme = {
+  ...createLightTheme(teal),
+  fontFamilyBase: FONT.body,
+  fontFamilyMonospace: FONT.mono,
+  colorNeutralBackground1: '#FFFFFF',
+  colorNeutralBackground1Hover: '#F1F5F9',
+  colorNeutralBackground1Pressed: '#E2E8F0',
+  colorNeutralBackground2: '#F3F6F8',
+  colorNeutralBackground3: '#E8EEF2',
+  colorNeutralCardBackground: '#FFFFFF',
+  colorNeutralCardBackgroundHover: '#F8FAFC',
+  colorNeutralCardBackgroundPressed: '#F1F5F9',
+  colorNeutralForeground1: '#0F172A',
+  colorNeutralForeground2: '#334155',
+  colorNeutralForeground3: '#64748B',
+  colorNeutralStroke1: '#CBD5E1',
+  colorNeutralStroke2: '#E2E8F0',
+  colorNeutralStrokeAccessible: '#64748B',
+  colorBrandForegroundLink: '#0284C7',
+  colorBrandForegroundLinkHover: '#0369A1',
+  colorNeutralShadowAmbient: 'rgba(15, 23, 42, 0.06)',
+  colorNeutralShadowKey: 'rgba(15, 23, 42, 0.10)',
+};
+
+/** @deprecated Use legalVaultDarkTheme; kept so existing imports keep working. */
+export const legalVaultTheme = legalVaultDarkTheme;

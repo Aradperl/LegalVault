@@ -3,7 +3,7 @@ import os
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
-from config import s3_client, contracts_table, users_table
+from config import CORS_ORIGINS, s3_client, contracts_table, users_table
 from models import ReminderUpdate
 from deps import get_current_user
 from routers import auth, contracts, google_auth, folders
@@ -18,11 +18,26 @@ app = FastAPI(title="LegalVault API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+_LOCAL_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
+
+
+@app.middleware("http")
+async def security_headers(request, call_next):
+    """HSTS only off-localhost so local http://localhost is not broken."""
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    host = (request.url.hostname or "").lower()
+    if host not in _LOCAL_HOSTS:
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
 
 # Register routers
 app.include_router(auth.router)

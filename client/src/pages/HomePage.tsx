@@ -5,6 +5,7 @@ import { useApp } from '../context/AppContext';
 import type { ContractItem } from '../context/AppContext';
 import { safeParse } from '../utils/contractHelpers';
 import { C, FONT } from '../theme';
+import { timeOfDayGreeting } from '../utils/greeting';
 
 // --- Helper: extract party from contract analysis
 function getContractParty(contract: ContractItem): string {
@@ -42,7 +43,8 @@ const panel: CSSProperties = {
 };
 
 export function HomePage() {
-  const { analytics, filteredAndSortedHistory, loading, handleUpload, handleUploadFile } = useApp();
+  const { analytics, filteredAndSortedHistory, loading, handleUpload, handleUploadFile, currentUser } = useApp();
+  const greeting = timeOfDayGreeting(currentUser);
 
   const recentContracts = filteredAndSortedHistory.slice(0, 5);
   const hasContracts = recentContracts.length > 0;
@@ -55,7 +57,13 @@ export function HomePage() {
 
   return (
     <div style={{ maxWidth: 1080 }}>
-      <DashboardHeader loading={loading} onUpload={handleUpload} onFileDrop={handleUploadFile} showFilterBar={false} />
+      <DashboardHeader
+        loading={loading}
+        onUpload={handleUpload}
+        onFileDrop={handleUploadFile}
+        showFilterBar={false}
+        greeting={greeting}
+      />
 
       <section style={{ marginBottom: 44 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>

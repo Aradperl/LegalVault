@@ -113,7 +113,7 @@ export function AnalyticsPage() {
       <Card style={{ marginBottom: 24 }}>
         <Text size={500} weight="bold" block style={{ marginBottom: 16, fontFamily: FONT.heading }}>Risk</Text>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16, marginBottom: 20 }}>
-          <Card style={{ borderColor: `${C.warn}55`, background: C.warnSoft }}>
+          <Card style={{ borderColor: C.warnRing, background: C.warnSoft }}>
             <Text size={500} weight="semibold" block>{analytics.autoRenewalCount}</Text>
             <Caption1 block style={{ color: C.muted }}>Renew automatically</Caption1>
           </Card>
@@ -134,7 +134,7 @@ export function AnalyticsPage() {
                   style={{
                     background: C.dangerSoft,
                     color: C.danger,
-                    border: `1px solid ${C.danger}33`,
+                    border: `1px solid ${C.dangerRing}`,
                     padding: '4px 10px',
                     borderRadius: 4,
                     fontFamily: FONT.mono,

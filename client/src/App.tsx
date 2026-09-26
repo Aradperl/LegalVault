@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Card, Subtitle1, Body1, Button } from '@fluentui/react-components';
 import * as S from './AppStyles';
 import { api, getPdfBlobUrl, setAuth, getToken, clearAuth, API_BASE } from './apiService';
+import { useIdleLogout } from './hooks/useIdleLogout';
 import { AppProvider } from './context/AppContext';
 import { AppLayout } from './layouts/AppLayout';
 import { HomePage } from './pages/HomePage';
@@ -57,6 +58,8 @@ function renderInsightContent(raw: string | unknown) {
 }
 
 function App() {
+  const navigate = useNavigate();
+
   // --- States ---
   const [currentUser, setCurrentUser] = useState(() => {
     try {
@@ -132,6 +135,23 @@ function App() {
     }
   }, [currentUser, loadUserData]);
 
+  const endSession = useCallback(() => {
+    clearAuth();
+    setIsLoggedIn(false);
+    setCurrentUser('');
+    setHistory([]);
+    navigate('/', { replace: true });
+  }, [navigate]);
+
+  useIdleLogout(isLoggedIn, endSession);
+
+  const enterSession = useCallback((token: string, name: string) => {
+    setAuth(token, name);
+    setCurrentUser(name);
+    setIsLoggedIn(true);
+    navigate('/', { replace: true });
+  }, [navigate]);
+
   // --- Handlers ---
   const handleAuth = async () => {
     const trimmedUser = username.trim();
@@ -166,31 +186,33 @@ function App() {
       const res = await api.authenticate(endpoint, formData);
       const data = res.data as Record<string, unknown>;
 
-      if (authMode === 'login') {
-        const token = data?.access_token as string | undefined;
-        const name = (data?.username as string) ?? trimmedUser;
-        if (!token) {
-          setAuthModal({
-            type: 'error',
-            title: 'Sign in failed',
-            body: 'Server did not return a token. Please try again.',
-            buttonText: 'Try again',
-          });
-          return;
-        }
-        setAuth(token, name);
-        setCurrentUser(name);
-        setIsLoggedIn(true);
-      } else {
-        setAuthMode('login');
-        setPassword('');
-        setAuthModal({
-          type: 'success',
-          title: 'Account created',
-          body: 'You can now sign in with your username and password.',
-          buttonText: 'Sign in',
-        });
+      const token = data?.access_token as string | undefined;
+      const name = (data?.username as string) ?? trimmedUser;
+
+      if (token) {
+        enterSession(token, name);
+        return;
       }
+
+      if (authMode === 'login') {
+        setAuthModal({
+          type: 'error',
+          title: 'Sign in failed',
+          body: 'Server did not return a token. Please try again.',
+          buttonText: 'Try again',
+        });
+        return;
+      }
+
+      setAuthMode('login');
+      setPassword('');
+      const apiMessage = typeof data?.message === 'string' ? data.message : '';
+      setAuthModal({
+        type: 'success',
+        title: 'Account created',
+        body: apiMessage || 'You can now sign in with your username and password.',
+        buttonText: 'Sign in',
+      });
     } catch (e: unknown) {
       const err = e as { response?: { data?: { detail?: string | string[] } }; message?: string };
       const detail = err?.response?.data?.detail;
@@ -469,6 +491,8 @@ function App() {
             <Route path="settings" element={<SettingsPage />} />
             <Route path="about" element={<AboutPage />} />
           </Route>
+          <Route path="/login" element={<Navigate to="/" replace />} />
+          <Route path="/signup" element={<Navigate to="/" replace />} />
         </Routes>
       </AppProvider>
 
