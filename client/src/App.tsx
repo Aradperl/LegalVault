@@ -116,9 +116,31 @@ function App() {
     }
     if (err?.code === 'ECONNABORTED') return 'The analysis timed out. Try a shorter PDF.';
     if (err?.message === 'Network Error' || err?.code === 'ERR_NETWORK') {
-      return 'Lost connection while analyzing. Check OPENAI_API_KEY on Railway and try again.';
+      return 'Could not reach the server. Try again in a moment.';
     }
     return err?.message || 'Upload failed.';
+  };
+
+  const waitForAnalyzedContract = async (contractId: string) => {
+    const deadline = Date.now() + 120000;
+    while (Date.now() < deadline) {
+      const res = await api.getContract(contractId);
+      const item = res.data.contract;
+      let parsed: { status?: string; error?: string; subject?: string; summary?: string } = {};
+      try {
+        parsed = typeof item.analysis === 'string' ? JSON.parse(item.analysis) : (item.analysis as typeof parsed) || {};
+      } catch {
+        parsed = {};
+      }
+      if (parsed.status === 'error') {
+        throw new Error(parsed.error || 'Analysis failed.');
+      }
+      if (parsed.status !== 'analyzing' && (parsed.subject || parsed.summary)) {
+        return item;
+      }
+      await new Promise((resolve) => window.setTimeout(resolve, 1500));
+    }
+    throw new Error('Analysis is taking too long. Refresh the page in a moment.');
   };
 
   // --- Data Loading ---
@@ -268,15 +290,14 @@ function App() {
     formData.append('file', file);
     try {
       const uploadRes = await api.upload(formData);
-      const contracts = await loadUserData();
       const createdId = (uploadRes.data as { contract_id?: string } | undefined)?.contract_id;
-      const created =
-        (createdId && contracts.find((c) => c.contract_id === createdId)) ||
-        [...contracts].sort((a, b) => new Date(b.timestamp || 0).getTime() - new Date(a.timestamp || 0).getTime())[0];
-      if (created) {
-        const details = safeParse(created.analysis);
-        setSelectedAnalysis(details.summary && details.summary !== 'N/A' ? details.summary : details.conclusion || 'No summary.');
+      if (!createdId) {
+        throw new Error('Upload did not return a contract.');
       }
+      const created = await waitForAnalyzedContract(createdId);
+      await loadUserData();
+      const details = safeParse(created.analysis);
+      setSelectedAnalysis(details.summary && details.summary !== 'N/A' ? details.summary : details.conclusion || 'No summary.');
       showToast('Contract added to your vault', 'success');
     } catch (e: unknown) {
       const msg = uploadFailMessage(e);

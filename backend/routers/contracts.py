@@ -41,21 +41,46 @@ def _extract_pdf_text(file_bytes: bytes) -> str:
     return "".join(page.get_text() for page in doc)
 
 
-def _analyze_and_store(user_id: str, filename: str, file_bytes: bytes, text: str, bucket: str):
+def _store_pending(user_id: str, filename: str, file_bytes: bytes, bucket: str) -> str:
     s3_client.put_object(Bucket=bucket, Key=f"{user_id}/{filename}", Body=file_bytes)
-    analysis = call_openai_analysis(text)
     contract_id = str(uuid.uuid4())
     contracts_table.put_item(
         Item={
             "user_id": user_id,
             "contract_id": contract_id,
             "filename": filename,
-            "analysis": json.dumps(analysis, default=str),
+            "analysis": json.dumps({"status": "analyzing"}),
             "timestamp": datetime.now().isoformat(),
             "reminder_setting": "week",
         }
     )
-    return analysis, contract_id
+    return contract_id
+
+
+def _write_analysis(user_id: str, contract_id: str, payload: dict) -> None:
+    contracts_table.update_item(
+        Key={"user_id": user_id, "contract_id": contract_id},
+        UpdateExpression="SET analysis = :a",
+        ExpressionAttributeValues={":a": json.dumps(payload, default=str)},
+    )
+
+
+async def _finish_analysis(user_id: str, contract_id: str, text: str) -> None:
+    try:
+        analysis = await asyncio.to_thread(call_openai_analysis, text)
+        await asyncio.to_thread(_write_analysis, user_id, contract_id, analysis)
+        try:
+            await asyncio.to_thread(_maybe_add_calendar, user_id, contract_id, analysis)
+        except Exception as cal_err:
+            logger.warning("Calendar reminder skipped: %s", cal_err)
+    except Exception as exc:
+        logger.exception("Background analysis failed")
+        await asyncio.to_thread(
+            _write_analysis,
+            user_id,
+            contract_id,
+            {"status": "error", "error": str(exc) or "Analysis failed."},
+        )
 
 
 def _maybe_add_calendar(user_id: str, contract_id: str, analysis: dict) -> None:
@@ -104,19 +129,13 @@ async def upload_contract(
         raise HTTPException(status_code=400, detail="Could not read that PDF. Try another file.")
 
     try:
-        analysis, contract_id = await asyncio.to_thread(
-            _analyze_and_store, user_id, filename, file_bytes, text, bucket
-        )
+        contract_id = await asyncio.to_thread(_store_pending, user_id, filename, file_bytes, bucket)
     except Exception as e:
         logger.exception("Contract upload failed")
         raise HTTPException(status_code=500, detail=str(e) or "Upload failed.") from e
 
-    try:
-        await asyncio.to_thread(_maybe_add_calendar, user_id, contract_id, analysis)
-    except Exception as cal_err:
-        logger.warning("Calendar reminder skipped: %s", cal_err)
-
-    return {"status": "success", "contract_id": contract_id}
+    asyncio.create_task(_finish_analysis(user_id, contract_id, text))
+    return {"status": "pending", "contract_id": contract_id}
 
 
 @router.get("/")
@@ -124,6 +143,15 @@ async def get_contracts(current_user: str = Depends(get_current_user)):
     res = contracts_table.query(KeyConditionExpression=Key("user_id").eq(current_user))
     items = res.get("Items", [])
     return {"contracts": jsonable_encoder(items, custom_encoder={Decimal: float})}
+
+
+@router.get("/{contract_id}")
+async def get_contract(contract_id: str, current_user: str = Depends(get_current_user)):
+    res = contracts_table.get_item(Key={"user_id": current_user, "contract_id": contract_id})
+    item = res.get("Item")
+    if not item:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    return {"contract": jsonable_encoder(item, custom_encoder={Decimal: float})}
 
 
 @router.delete("/{contract_id}")

@@ -88,6 +88,7 @@ export async function getPdfBlobUrl(contractId: string): Promise<string> {
 
 export const api = {
   getContracts: () => authClient.get<{ contracts: unknown[] }>('/contracts'),
+  getContract: (id: string) => authClient.get<{ contract: { contract_id: string; analysis?: unknown; timestamp?: string } }>(`/contracts/${id}`),
   checkGoogle: () => authClient.get<{ connected: boolean; picture_url?: string }>('/check-google-connection'),
   authenticate: (endpoint: string, data: URLSearchParams) =>
     axios.post(`${API_BASE}/${endpoint}`, data.toString(), {
