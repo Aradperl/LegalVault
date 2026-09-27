@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
@@ -26,6 +27,17 @@ app.add_middleware(
 )
 
 _LOCAL_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
+_RAILWAY_ORIGIN = re.compile(CORS_ORIGIN_REGEX)
+
+
+def _browser_origin(origin: str | None) -> str | None:
+    if not origin:
+        return None
+    if origin in CORS_ORIGINS or _RAILWAY_ORIGIN.fullmatch(origin):
+        return origin
+    if origin.startswith("http://localhost:") or origin.startswith("http://127.0.0.1:"):
+        return origin
+    return None
 
 
 @app.middleware("http")
@@ -38,6 +50,31 @@ async def security_headers(request, call_next):
     host = (request.url.hostname or "").lower()
     if host not in _LOCAL_HOSTS:
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
+
+
+@app.middleware("http")
+async def answer_cors_preflight(request, call_next):
+    """Browsers preflight uploads. Answer OPTIONS here so it never becomes 405."""
+    origin = _browser_origin(request.headers.get("origin"))
+    if request.method == "OPTIONS":
+        headers = {
+            "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+            "Access-Control-Allow-Headers": request.headers.get(
+                "access-control-request-headers", "authorization, content-type"
+            ),
+            "Access-Control-Max-Age": "600",
+        }
+        if origin:
+            headers["Access-Control-Allow-Origin"] = origin
+            headers["Access-Control-Allow-Credentials"] = "true"
+            headers["Vary"] = "Origin"
+        return Response(status_code=204, headers=headers)
+    response = await call_next(request)
+    if origin:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Vary"] = "Origin"
     return response
 
 # Register routers
