@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import * as S from '../AppStyles';
+import { openVaultChat } from './ChatDock';
 import { safeParse, riskFlagLabel } from '../utils/contractHelpers';
 import type { FolderItem } from '../apiService';
-import { FileText, Sparkles, FolderPlus, Check } from 'lucide-react';
+import { FileText, Sparkles, FolderPlus, Check, MessageCircle } from 'lucide-react';
 import { C } from '../theme';
 
 interface ContractCardProps {
@@ -52,14 +53,11 @@ export const ContractCard: React.FC<ContractCardProps> = ({
   const cardPartyFinal = compact ? { ...S.cardParty, fontSize: 15 } : S.cardParty;
   const cardSummaryFinal = compact ? { ...S.cardSummary, fontSize: 13 } : S.cardSummary;
   const cardMetaFinal = compact ? { ...S.cardMeta, marginTop: 12, padding: '10px 0' } : S.cardMeta;
-  const cardActionsFinal = compact ? { ...S.cardActions, marginTop: 10, gap: 6, flexWrap: 'wrap' as const } : S.cardActions;
   const notSignedStyle = {
     marginTop: 10, padding: compact ? '3px 8px' : '4px 10px', borderRadius: 4, background: C.warnSoft,
     border: `1px solid ${C.warnRing}`, fontSize: compact ? 11.5 : 12.5, fontWeight: 500, color: C.warn,
     display: 'inline-block' as const, width: 'fit-content',
   };
-  const alertSelectStyle = compact ? { ...S.miniSelect, width: 72, minWidth: 72, padding: '6px 6px' } : { ...S.miniSelect, width: 88, minWidth: 88 };
-
   return (
     <div style={cardStyleFinal} className="card-hover">
       <div style={S.cardTop}>
@@ -118,22 +116,33 @@ export const ContractCard: React.FC<ContractCardProps> = ({
         </div>
       )}
 
-      <div style={cardActionsFinal}>
-        <button type="button" onClick={(e) => onFileClick(contract.contract_id, e)} style={S.viewPdfBtn}>
-          <FileText size={15} strokeWidth={2} aria-hidden /> View PDF
-        </button>
-        <button type="button" onClick={() => onViewInsights(summaryText)} style={S.secondaryBtn}>
-          <Sparkles size={15} strokeWidth={2} aria-hidden /> Insights
-        </button>
+      <div className={`contract-card-actions${compact ? ' is-compact' : ''}`}>
+        <div className="contract-card-buttons">
+          <button type="button" onClick={(e) => onFileClick(contract.contract_id, e)} style={S.viewPdfBtn}>
+            <FileText size={15} strokeWidth={2} aria-hidden /> View PDF
+          </button>
+          <button type="button" onClick={() => onViewInsights(summaryText)} style={S.secondaryBtn}>
+            <Sparkles size={15} strokeWidth={2} aria-hidden /> Insights
+          </button>
+          <button
+            type="button"
+            onClick={() => openVaultChat(contract.contract_id)}
+            style={S.secondaryBtn}
+          >
+            <MessageCircle size={15} strokeWidth={2} aria-hidden /> Ask about this
+          </button>
+        </div>
         {isGoogleConnected && (
           <select
+            className="contract-card-alert"
+            aria-label="Reminder"
             value={contract.reminder_setting || 'none'}
             onChange={(e) => onReminderChange(contract.contract_id, e.target.value)}
-            style={alertSelectStyle}
+            style={S.miniSelect}
           >
             <option value="none">No alert</option>
-            <option value="week">1 week</option>
-            <option value="month">1 month</option>
+            <option value="week">1 week before</option>
+            <option value="month">1 month before</option>
           </select>
         )}
       </div>

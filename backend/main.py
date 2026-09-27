@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import os
 import re
@@ -7,7 +9,7 @@ from fastapi.responses import Response
 from config import CORS_ORIGIN_REGEX, CORS_ORIGINS, s3_client, contracts_table, users_table
 from models import ReminderUpdate
 from deps import get_current_user
-from routers import auth, contracts, google_auth, folders
+from routers import auth, chat, contracts, google_auth, folders
 from services.calendar_service import (
     create_or_update_reminder_event,
     delete_reminder_event,
@@ -82,6 +84,7 @@ app.include_router(auth.router)
 app.include_router(contracts.router)
 app.include_router(google_auth.router)
 app.include_router(folders.router)
+app.include_router(chat.router)
 
 
 @app.get("/view/{contract_id}/pdf")
