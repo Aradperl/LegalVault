@@ -304,7 +304,7 @@ export function LandingPage(props: LandingPageProps) {
             </div>
             {!isLogin && (
               <ul className="signup-rules" aria-label="Account requirements">
-                <li>Username: at least 3 characters; letters, numbers, _ or -</li>
+                <li>Username: 3–64 characters. An email address is allowed as the username (letters, numbers, and . _ % + - @).</li>
                 <li>Valid email address</li>
                 <li>Password: 10+ characters, with a letter and a number</li>
                 <li>Avoid obvious passwords (password, qwerty, letmein, …)</li>

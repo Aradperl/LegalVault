@@ -11,7 +11,7 @@ logger = logging.getLogger("legalvault")
 
 router = APIRouter(tags=["Authentication"])
 
-USERNAME_RE = re.compile(r"^[A-Za-z0-9_-]{3,64}$")
+USERNAME_RE = re.compile(r"^[A-Za-z0-9._%+\-@]{3,64}$")
 EMAIL_RE = re.compile(r"^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$")
 COMMON_PASSWORDS = frozenset(
     {
@@ -53,7 +53,7 @@ def _validate_username(username: str) -> str:
     if not USERNAME_RE.fullmatch(username):
         raise HTTPException(
             status_code=400,
-            detail="Username may only contain letters, numbers, underscores, and hyphens.",
+            detail="Username may only contain letters, numbers, and . _ % + - @.",
         )
     return username
 
