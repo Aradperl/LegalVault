@@ -56,7 +56,7 @@ export function HomePage() {
   ];
 
   return (
-    <div style={{ maxWidth: 1080 }}>
+    <div className="home-page" style={{ maxWidth: 1080 }}>
       <DashboardHeader
         loading={loading}
         onUpload={handleUpload}

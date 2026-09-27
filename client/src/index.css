@@ -1113,6 +1113,25 @@ body:has(.landing),
   .scanner-line { animation-duration: 6s; }
 }
 
+@media (min-width: 760px) {
+  .home-page {
+    max-width: none !important;
+    width: 100%;
+  }
+
+  .home-hero {
+    max-width: none !important;
+    width: 100%;
+    text-align: center;
+  }
+
+  .home-hero-title,
+  .home-hero-sub {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
 @keyframes spin { to { transform: rotate(360deg); } }
 .spin { animation: spin 1s linear infinite; }
 

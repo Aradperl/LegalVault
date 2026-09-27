@@ -60,11 +60,11 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
   return (
     <>
-      <header style={S.heroSection}>
-        <Title1 block style={S.heroTitle as React.CSSProperties}>
+      <header className="home-hero" style={S.heroSection}>
+        <Title1 block className="home-hero-title" style={S.heroTitle as React.CSSProperties}>
           {greeting || 'Add a contract to your vault'}
         </Title1>
-        <Body1 block style={S.heroSub as React.CSSProperties}>
+        <Body1 block className="home-hero-sub" style={S.heroSub as React.CSSProperties}>
           Upload a PDF. LegalVault pulls out the parties, dates and fees, flags risky terms, and keeps track of the deadlines.
         </Body1>
         <Card
