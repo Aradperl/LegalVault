@@ -1,11 +1,11 @@
-import type { CSSProperties } from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
 import { ContractCard } from '../components/ContractCard';
 import { useApp } from '../context/AppContext';
 import { api } from '../apiService';
-import { Body1 } from '@fluentui/react-components';
-import { Home, FileText, BarChart3, Settings, Info, type LucideIcon } from 'lucide-react';
+import { Body1, Button } from '@fluentui/react-components';
+import { Home, FileText, BarChart3, Settings, Info, MoreHorizontal, type LucideIcon } from 'lucide-react';
 import { C, FONT } from '../theme';
 const SIDEBAR_WIDTH = 260;
 const NAVBAR_HEIGHT = 72;
@@ -48,12 +48,13 @@ const navLinkActive: CSSProperties = {
   boxShadow: `inset 2px 0 0 ${C.emerald}`,
 };
 
-function SideLink({ to, icon: Icon, label, end }: { to: string; icon: LucideIcon; label: string; end?: boolean }) {
+function SideLink({ to, icon: Icon, label, end, onClick }: { to: string; icon: LucideIcon; label: string; end?: boolean; onClick?: () => void }) {
   return (
     <NavLink
       to={to}
       end={end}
       className="nav-link"
+      onClick={onClick}
       style={({ isActive }) => ({ ...navLinkBase, ...(isActive ? navLinkActive : {}) })}
     >
       {({ isActive }) => (
@@ -92,29 +93,62 @@ function getRecentContracts(history: { contract_id: string; timestamp: string }[
     .slice(0, 15);
 }
 
+function TabLink({ to, icon: Icon, label, end }: { to: string; icon: LucideIcon; label: string; end?: boolean }) {
+  return (
+    <NavLink
+      to={to}
+      end={end}
+      className={({ isActive }) => `app-tab${isActive ? ' is-active' : ''}`}
+    >
+      <Icon size={20} strokeWidth={2} aria-hidden />
+      <span>{label}</span>
+    </NavLink>
+  );
+}
+
 export function AppLayout() {
   const app = useApp();
+  const location = useLocation();
   const recentContracts = getRecentContracts(app.history || []);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreSheetRef = useRef<HTMLDivElement>(null);
+  const moreInMenu = location.pathname === '/settings' || location.pathname === '/about';
+
+  const connectGoogle = async () => {
+    try {
+      const res = await api.connectGoogle();
+      if (res.data.url) window.open(res.data.url, 'google-auth', 'width=500,height=600');
+    } catch {
+      alert('Google Connect Failed');
+    }
+  };
+
+  useEffect(() => {
+    setMoreOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!moreOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMoreOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    moreSheetRef.current?.querySelector<HTMLElement>('a, button')?.focus();
+    return () => document.removeEventListener('keydown', onKey);
+  }, [moreOpen]);
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: C.vault }}>
+    <div className="app-shell" style={{ minHeight: '100vh', backgroundColor: C.vault }}>
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50 }}>
         <Navbar
           isGoogleConnected={app.isGoogleConnected}
           userPicture={app.userPicture}
           currentUser={app.currentUser}
-          onGoogleConnect={async () => {
-            try {
-              const res = await api.connectGoogle();
-              if (res.data.url) window.open(res.data.url, 'google-auth', 'width=500,height=600');
-            } catch {
-              alert('Google Connect Failed');
-            }
-          }}
+          onGoogleConnect={connectGoogle}
         />
       </div>
 
-      <aside style={sidebarStyle}>
+      <aside className="app-sidebar" style={sidebarStyle}>
         <nav style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <SideLink to="/" end icon={Home} label="Home" />
           <SideLink to="/contracts" icon={FileText} label="Contracts" />
@@ -152,6 +186,7 @@ export function AppLayout() {
       </aside>
 
       <main
+        className="app-main"
         style={{
           marginLeft: SIDEBAR_WIDTH,
           paddingTop: NAVBAR_HEIGHT + 20,
@@ -166,6 +201,65 @@ export function AppLayout() {
       >
         <Outlet />
       </main>
+
+      <nav className="app-tabbar" aria-label="Primary">
+        <TabLink to="/" end icon={Home} label="Home" />
+        <TabLink to="/contracts" icon={FileText} label="Contracts" />
+        <TabLink to="/analytics" icon={BarChart3} label="Analytics" />
+        <button
+          type="button"
+          className={`app-tab${moreOpen || moreInMenu ? ' is-active' : ''}`}
+          aria-expanded={moreOpen}
+          aria-controls="more-sheet"
+          onClick={() => setMoreOpen((open) => !open)}
+        >
+          <MoreHorizontal size={20} strokeWidth={2} aria-hidden />
+          <span>More</span>
+        </button>
+      </nav>
+
+      {moreOpen && (
+        <div className="more-backdrop" onClick={() => setMoreOpen(false)}>
+          <div
+            ref={moreSheetRef}
+            id="more-sheet"
+            className="more-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label="More"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <nav style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <SideLink to="/settings" icon={Settings} label="Settings" onClick={() => setMoreOpen(false)} />
+              <SideLink to="/about" icon={Info} label="About" onClick={() => setMoreOpen(false)} />
+            </nav>
+            <div className="more-sheet-calendar">
+              {app.isGoogleConnected ? (
+                <span style={googleStatusStyle} role="status">
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: C.emerald, flexShrink: 0 }} aria-hidden />
+                  Google Calendar connected
+                </span>
+              ) : (
+                <Button appearance="outline" style={{ width: '100%' }} onClick={connectGoogle}>
+                  Connect Google Calendar
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+const googleStatusStyle: CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 8,
+  fontSize: 13,
+  fontWeight: 500,
+  color: C.textSoft,
+  padding: '6px 12px',
+  borderRadius: 6,
+  border: `1px solid ${C.slate}`,
+};

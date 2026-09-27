@@ -561,7 +561,7 @@ function App() {
       {selectedAnalysis && (
         <div className="insights-overlay" style={S.modalOverlay} onClick={() => setSelectedAnalysis(null)}>
           <Card className="insights-panel" style={S.modalContent} onClick={e => e.stopPropagation()}>
-            <div style={S.modalHeader}>
+            <div className="insights-header" style={S.modalHeader}>
               <Subtitle1 block style={{ margin: 0, fontFamily: FONT.heading, fontSize: '20px', fontWeight: 700, color: C.text }}>Contract insights</Subtitle1>
               <Button appearance="subtle" onClick={() => setSelectedAnalysis(null)} aria-label="Close">×</Button>
             </div>

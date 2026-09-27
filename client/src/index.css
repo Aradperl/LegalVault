@@ -133,6 +133,169 @@ a { color: var(--cyber); }
   .insights-body { animation: none; }
 }
 
+/* Logged-in shell below 760px: sidebar yields to a bottom tab bar. */
+.app-tabbar { display: none; }
+
+@media (max-width: 759px) {
+  .app-sidebar { display: none !important; }
+
+  .app-main {
+    margin-left: 0 !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .app-navbar {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .app-logo {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .logo-wordmark {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-navbar-actions {
+    gap: 12px !important;
+    flex-shrink: 0;
+  }
+
+  .nav-google,
+  .nav-google-rule { display: none !important; }
+
+  .app-tabbar {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 45;
+    height: calc(58px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--nav-bg);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--slate);
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+  }
+
+  .insights-overlay {
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    padding: 0 !important;
+  }
+
+  .insights-panel {
+    width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    padding: 20px 20px calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .insights-header { flex-shrink: 0; }
+
+  .insights-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .home-contract-row {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 4px !important;
+    padding: 14px 16px !important;
+  }
+
+  .contracts-filter { align-items: stretch !important; }
+
+  .contracts-search {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+}
+
+.app-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  margin: 0;
+  padding: 6px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.1;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: inset 0 2px 0 transparent;
+}
+
+.app-tab.is-active {
+  color: var(--text);
+  box-shadow: inset 0 2px 0 var(--emerald);
+}
+
+.app-tab.is-active svg { color: var(--emerald); }
+
+.more-backdrop {
+  position: fixed;
+  top: 72px;
+  right: 0;
+  bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+  left: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(5, 8, 14, 0.75);
+  backdrop-filter: blur(6px);
+}
+
+.more-sheet {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--slate);
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+  padding: 16px 8px calc(16px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  animation: moreSheetIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.more-sheet-calendar {
+  margin-top: 12px;
+  padding: 16px 12px 4px;
+  border-top: 1px solid var(--slate);
+}
+
+@keyframes moreSheetIn {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+
+@media (min-width: 760px) {
+  .more-backdrop { display: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .more-sheet { animation: none; }
+}
+
 /* Upload scanner (shown while a PDF is analyzed) */
 @keyframes scanMove { 0% { transform: translateY(-100%); } 100% { transform: translateY(400%); } }
 .scanner-line {
