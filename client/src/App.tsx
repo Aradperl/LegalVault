@@ -245,8 +245,17 @@ function App() {
     try {
       await api.upload(formData);
       loadUserData();
-    } catch (e) {
-      alert('Upload Failed');
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { detail?: string | string[] } }; code?: string; message?: string };
+      const detail = err?.response?.data?.detail;
+      const msg = Array.isArray(detail)
+        ? detail.join(' ')
+        : typeof detail === 'string'
+          ? detail
+          : err?.code === 'ECONNABORTED'
+            ? 'The analysis timed out. Try a shorter PDF.'
+            : err?.message || 'Upload failed.';
+      alert(msg);
     } finally {
       setLoading(false);
     }

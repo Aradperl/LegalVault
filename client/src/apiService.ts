@@ -94,7 +94,8 @@ export const api = {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     }),
   connectGoogle: () => authClient.get<{ url: string }>('/auth/google'),
-  upload: (formData: FormData) => authClient.post('/contracts/upload', formData),
+  upload: (formData: FormData) =>
+    authClient.post('/contracts/upload', formData, { timeout: 180000 }),
   deleteContract: (id: string) => authClient.delete(`/contracts/${id}`),
   updateReminder: (data: { contract_id: string; reminder_setting: string }) =>
     authClient.post('/update-reminder', data),
