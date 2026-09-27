@@ -1,7 +1,12 @@
 import json
+import os
+
 from config import ai_client
 
+
 def call_openai_analysis(text_content):
+    if not (os.getenv("OPENAI_API_KEY") or "").strip():
+        raise RuntimeError("OPENAI_API_KEY is not configured.")
     prompt_instruction = """
     You are an expert legal assistant. Analyze the contract and return a JSON object with:
     1. "subject": A short title (3-5 words).

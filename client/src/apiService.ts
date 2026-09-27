@@ -51,7 +51,7 @@ function createAuthClient() {
     (err) => {
       if (err?.response?.status === 401) {
         clearAuth();
-        window.location.reload();
+        window.dispatchEvent(new Event('lv-unauthorized'));
       }
       return Promise.reject(err);
     }

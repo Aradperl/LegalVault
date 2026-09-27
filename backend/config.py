@@ -92,7 +92,7 @@ users_table = dynamodb.Table('Users')
 folders_table = dynamodb.Table('Contract_Folders')
 
 # AI & Auth
-ai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+ai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), timeout=60.0)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # JWT

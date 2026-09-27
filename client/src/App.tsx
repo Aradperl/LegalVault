@@ -97,32 +97,48 @@ function App() {
   const [sortBy, setSortBy] = useState<'timestamp' | 'alphabetical' | 'expiry'>('timestamp');
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [uploadError, setUploadError] = useState('');
 
   const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
-    setTimeout(() => setToast(null), 3500);
+    window.setTimeout(() => setToast(null), type === 'error' ? 10000 : 3500);
   }, []);
+
+  const uploadFailMessage = (e: unknown) => {
+    const err = e as { response?: { data?: { detail?: unknown } }; code?: string; message?: string };
+    const detail = err?.response?.data?.detail;
+    if (typeof detail === 'string' && detail.trim()) return detail;
+    if (Array.isArray(detail)) {
+      return detail
+        .map((item) => (typeof item === 'string' ? item : (item as { msg?: string })?.msg))
+        .filter(Boolean)
+        .join(' ') || 'Upload failed.';
+    }
+    if (err?.code === 'ECONNABORTED') return 'The analysis timed out. Try a shorter PDF.';
+    if (err?.message === 'Network Error' || err?.code === 'ERR_NETWORK') {
+      return 'Lost connection while analyzing. Check OPENAI_API_KEY on Railway and try again.';
+    }
+    return err?.message || 'Upload failed.';
+  };
 
   // --- Data Loading ---
   const loadUserData = useCallback(async () => {
-    if (!getToken()) return;
-    try {
-      const [resContracts, resGoogle] = await Promise.all([
-        api.getContracts(),
-        api.checkGoogle(),
-      ]);
-      setHistory(resContracts.data?.contracts || []);
-      setIsGoogleConnected(resGoogle.data.connected || false);
-      setUserPicture(resGoogle.data.picture_url || null);
-    } catch (e) {
-      console.error('Error loading data:', e);
-    }
+    if (!getToken()) return [];
+    const [resContracts, resGoogle] = await Promise.all([
+      api.getContracts(),
+      api.checkGoogle(),
+    ]);
+    const contracts = (resContracts.data?.contracts || []) as { contract_id?: string; timestamp?: string; analysis?: unknown }[];
+    setHistory(contracts);
+    setIsGoogleConnected(resGoogle.data.connected || false);
+    setUserPicture(resGoogle.data.picture_url || null);
+    return contracts;
   }, []);
 
   // Listen for Google OAuth success (popup)
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (event.data === 'google-success') loadUserData();
+      if (event.data === 'google-success') loadUserData().catch((e) => console.error('Error loading data:', e));
     };
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
@@ -131,7 +147,7 @@ function App() {
   useEffect(() => {
     if (getToken() && currentUser) {
       setIsLoggedIn(true);
-      loadUserData();
+      loadUserData().catch((e) => console.error('Error loading data:', e));
     }
   }, [currentUser, loadUserData]);
 
@@ -140,8 +156,15 @@ function App() {
     setIsLoggedIn(false);
     setCurrentUser('');
     setHistory([]);
+    setUploadError('');
     navigate('/', { replace: true });
   }, [navigate]);
+
+  useEffect(() => {
+    const onUnauthorized = () => endSession();
+    window.addEventListener('lv-unauthorized', onUnauthorized);
+    return () => window.removeEventListener('lv-unauthorized', onUnauthorized);
+  }, [endSession]);
 
   useIdleLogout(isLoggedIn, endSession);
 
@@ -240,22 +263,25 @@ function App() {
       return;
     }
     setLoading(true);
+    setUploadError('');
     const formData = new FormData();
     formData.append('file', file);
     try {
-      await api.upload(formData);
-      loadUserData();
+      const uploadRes = await api.upload(formData);
+      const contracts = await loadUserData();
+      const createdId = (uploadRes.data as { contract_id?: string } | undefined)?.contract_id;
+      const created =
+        (createdId && contracts.find((c) => c.contract_id === createdId)) ||
+        [...contracts].sort((a, b) => new Date(b.timestamp || 0).getTime() - new Date(a.timestamp || 0).getTime())[0];
+      if (created) {
+        const details = safeParse(created.analysis);
+        setSelectedAnalysis(details.summary && details.summary !== 'N/A' ? details.summary : details.conclusion || 'No summary.');
+      }
+      showToast('Contract added to your vault', 'success');
     } catch (e: unknown) {
-      const err = e as { response?: { data?: { detail?: string | string[] } }; code?: string; message?: string };
-      const detail = err?.response?.data?.detail;
-      const msg = Array.isArray(detail)
-        ? detail.join(' ')
-        : typeof detail === 'string'
-          ? detail
-          : err?.code === 'ECONNABORTED'
-            ? 'The analysis timed out. Try a shorter PDF.'
-            : err?.message || 'Upload failed.';
-      alert(msg);
+      const msg = uploadFailMessage(e);
+      setUploadError(msg);
+      showToast(msg, 'error');
     } finally {
       setLoading(false);
     }
@@ -399,6 +425,7 @@ function App() {
       isGoogleConnected,
       history,
       loading,
+      uploadError,
       searchTerm,
       setSearchTerm,
       sortBy,
@@ -429,6 +456,7 @@ function App() {
       isGoogleConnected,
       history,
       loading,
+      uploadError,
       searchTerm,
       sortBy,
       filteredAndSortedHistory,
@@ -506,13 +534,13 @@ function App() {
       </AppProvider>
 
       {selectedAnalysis && (
-        <div style={S.modalOverlay} onClick={() => setSelectedAnalysis(null)}>
-          <Card style={S.modalContent} onClick={e => e.stopPropagation()}>
+        <div className="insights-overlay" style={S.modalOverlay} onClick={() => setSelectedAnalysis(null)}>
+          <Card className="insights-panel" style={S.modalContent} onClick={e => e.stopPropagation()}>
             <div style={S.modalHeader}>
               <Subtitle1 block style={{ margin: 0, fontFamily: FONT.heading, fontSize: '20px', fontWeight: 700, color: C.text }}>Contract insights</Subtitle1>
               <Button appearance="subtle" onClick={() => setSelectedAnalysis(null)} aria-label="Close">×</Button>
             </div>
-            <div style={S.modalBody}>{renderInsightContent(selectedAnalysis)}</div>
+            <div className="insights-body" style={S.modalBody}>{renderInsightContent(selectedAnalysis)}</div>
           </Card>
         </div>
       )}

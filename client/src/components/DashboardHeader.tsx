@@ -14,6 +14,7 @@ interface DashboardHeaderProps {
   onSortChange?: (val: string) => void;
   showFilterBar?: boolean;
   greeting?: string;
+  error?: string;
 }
 
 function preventDefault(e: React.DragEvent) {
@@ -31,6 +32,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onSortChange = () => {},
   showFilterBar = true,
   greeting,
+  error,
 }) => {
   const [dragActive, setDragActive] = useState(false);
 
@@ -86,6 +88,9 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             </div>
             <span style={{ fontWeight: 600, color: C.text }}>{uploadLabelText}</span>
             {!loading && <span style={{ fontSize: 13, color: C.faint }}>PDF files only</span>}
+            {!loading && error && (
+              <span style={{ fontSize: 13, color: C.danger, fontWeight: 600, textAlign: 'center' }}>{error}</span>
+            )}
           </label>
         </Card>
       </header>

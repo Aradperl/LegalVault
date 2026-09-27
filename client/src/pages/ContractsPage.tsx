@@ -92,6 +92,7 @@ export function ContractsPage() {
   const {
     currentUser,
     loading,
+    uploadError,
     handleUpload,
     handleUploadFile,
     searchTerm,
@@ -188,7 +189,7 @@ export function ContractsPage() {
 
   return (
     <>
-      <CompactUploadBar loading={loading} onUpload={handleUpload} onFileDrop={handleUploadFile} />
+      <CompactUploadBar loading={loading} error={uploadError} onUpload={handleUpload} onFileDrop={handleUploadFile} />
 
       <div style={filterBarStyle}>
         <Input

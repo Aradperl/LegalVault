@@ -26,11 +26,12 @@ export interface AppContextValue {
   isGoogleConnected: boolean;
   history: ContractItem[];
   loading: boolean;
+  uploadError: string;
   searchTerm: string;
   setSearchTerm: (v: string) => void;
   sortBy: 'timestamp' | 'alphabetical' | 'expiry';
   setSortBy: (v: 'timestamp' | 'alphabetical' | 'expiry') => void;
-  loadUserData: () => Promise<void>;
+  loadUserData: () => Promise<ContractItem[]>;
   handleUploadFile: (file: File) => Promise<void>;
   handleUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDeleteContract: (id: string) => void;
@@ -62,6 +63,7 @@ export function AppProvider({ value, children }: AppProviderProps) {
     value.isGoogleConnected,
     value.history,
     value.loading,
+    value.uploadError,
     value.searchTerm,
     value.sortBy,
     value.filteredAndSortedHistory,

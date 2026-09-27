@@ -226,6 +226,9 @@ contract_manager/
 | `FRONTEND_URL` | `https://frontend-production-4e4c.up.railway.app` |
 | `CORS_ORIGINS` | Optional comma-separated extra origins if you have more than one frontend |
 | `ENVIRONMENT` | `production` |
+| `S3_BUCKET_NAME` | Same bucket as local, e.g. `my-contracts-bucket-123` |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_REGION` | IAM user that can use S3 + DynamoDB |
+| `OPENAI_API_KEY` | Required for contract analysis |
 
 ---
 

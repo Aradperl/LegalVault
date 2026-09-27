@@ -43,7 +43,7 @@ const panel: CSSProperties = {
 };
 
 export function HomePage() {
-  const { analytics, filteredAndSortedHistory, loading, handleUpload, handleUploadFile, currentUser } = useApp();
+  const { analytics, filteredAndSortedHistory, loading, uploadError, handleUpload, handleUploadFile, currentUser } = useApp();
   const greeting = timeOfDayGreeting(currentUser);
 
   const recentContracts = filteredAndSortedHistory.slice(0, 5);
@@ -63,6 +63,7 @@ export function HomePage() {
         onFileDrop={handleUploadFile}
         showFilterBar={false}
         greeting={greeting}
+        error={uploadError}
       />
 
       <section style={{ marginBottom: 44 }}>

@@ -6,6 +6,7 @@ import { C } from '../theme';
 
 interface CompactUploadBarProps {
   loading: boolean;
+  error?: string;
   onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onFileDrop: (file: File) => void;
 }
@@ -15,7 +16,7 @@ function preventDefault(e: React.DragEvent) {
   e.stopPropagation();
 }
 
-export function CompactUploadBar({ loading, onUpload, onFileDrop }: CompactUploadBarProps) {
+export function CompactUploadBar({ loading, error, onUpload, onFileDrop }: CompactUploadBarProps) {
   const [dragActive, setDragActive] = useState(false);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -70,7 +71,12 @@ export function CompactUploadBar({ loading, onUpload, onFileDrop }: CompactUploa
         <div style={{ ...S.iconCircle, width: 40, height: 40, marginBottom: 0 }}>
           {loading ? <Loader2 size={20} strokeWidth={2} className="spin" aria-hidden /> : <FileUp size={20} strokeWidth={2} aria-hidden />}
         </div>
-        <Body1 style={{ fontSize: 15, fontWeight: 600, color: C.text }}>{labelText}</Body1>
+        <div>
+          <Body1 style={{ fontSize: 15, fontWeight: 600, color: C.text }}>{labelText}</Body1>
+          {!loading && error && (
+            <Body1 style={{ display: 'block', fontSize: 13, color: C.danger, fontWeight: 600, marginTop: 4 }}>{error}</Body1>
+          )}
+        </div>
       </label>
     </Card>
   );

@@ -106,6 +106,33 @@ a { color: var(--cyber); }
 .card-hover { transition: border-color 0.2s ease; }
 .card-hover:hover { border-color: var(--line-strong) !important; }
 
+@keyframes insightsOverlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes insightsPanelIn {
+  from { opacity: 0; transform: translateY(36px) scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes insightsBodyIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.insights-overlay {
+  animation: insightsOverlayIn 0.28s ease-out both;
+}
+.insights-panel {
+  animation: insightsPanelIn 0.48s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.insights-body {
+  animation: insightsBodyIn 0.4s ease-out 0.16s both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .insights-overlay,
+  .insights-panel,
+  .insights-body { animation: none; }
+}
+
 /* Upload scanner (shown while a PDF is analyzed) */
 @keyframes scanMove { 0% { transform: translateY(-100%); } 100% { transform: translateY(400%); } }
 .scanner-line {
