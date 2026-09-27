@@ -1132,8 +1132,9 @@ body:has(.landing),
   }
 
   .home-hero-sub {
-    margin-left: auto !important;
-    margin-right: auto !important;
+    text-align: left;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 }
 
