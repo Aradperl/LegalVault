@@ -550,6 +550,7 @@ function App() {
             <Route index element={<HomePage />} />
             <Route path="contracts" element={<ContractsPage />} />
             <Route path="analytics" element={<AnalyticsPage />} />
+            <Route path="chat" element={null} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="about" element={<AboutPage />} />
           </Route>

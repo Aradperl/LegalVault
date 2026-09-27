@@ -6,6 +6,7 @@ import { useApp } from '../context/AppContext';
 import { api } from '../apiService';
 import { Body1, Button } from '@fluentui/react-components';
 import { Home, FileText, BarChart3, Settings, Info, MoreHorizontal, type LucideIcon } from 'lucide-react';
+import { ChatDock } from '../components/ChatDock';
 import { C, FONT } from '../theme';
 const SIDEBAR_WIDTH = 260;
 const NAVBAR_HEIGHT = 72;
@@ -201,6 +202,8 @@ export function AppLayout() {
       >
         <Outlet />
       </main>
+
+      <ChatDock />
 
       <nav className="app-tabbar" aria-label="Primary">
         <TabLink to="/" end icon={Home} label="Home" />

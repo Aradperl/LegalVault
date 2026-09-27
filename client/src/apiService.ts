@@ -106,4 +106,6 @@ export const api = {
   updateFolder: (folderId: string, data: { name?: string; color?: string; symbol?: string; contract_ids?: string[] }) =>
     authClient.patch<{ folder: FolderItem }>(`/folders/${folderId}`, data),
   deleteFolder: (folderId: string) => authClient.delete(`/folders/${folderId}`),
+  chat: (data: { message: string; contract_id?: string; messages: { role: 'user' | 'assistant'; content: string }[] }) =>
+    authClient.post<{ reply: string }>('/chat', data),
 };
