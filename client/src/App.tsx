@@ -4,7 +4,7 @@ import { Card, Subtitle1, Body1, Button } from '@fluentui/react-components';
 import * as S from './AppStyles';
 import { api, getPdfBlobUrl, setAuth, getToken, clearAuth, API_BASE } from './apiService';
 import { useIdleLogout } from './hooks/useIdleLogout';
-import { AppProvider } from './context/AppContext';
+import { AppProvider, type ContractItem } from './context/AppContext';
 import { AppLayout } from './layouts/AppLayout';
 import { HomePage } from './pages/HomePage';
 import { ContractsPage } from './pages/ContractsPage';
@@ -82,7 +82,7 @@ function App() {
     }
   });
   const [userPicture, setUserPicture] = useState<string | null>(null);
-  const [history, setHistory] = useState<any[]>([]);
+  const [history, setHistory] = useState<ContractItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedAnalysis, setSelectedAnalysis] = useState<string | null>(null);
   const [pdfViewUrl, setPdfViewUrl] = useState<string | null>(null);
@@ -128,7 +128,7 @@ function App() {
       api.getContracts(),
       api.checkGoogle(),
     ]);
-    const contracts = (resContracts.data?.contracts || []) as { contract_id?: string; timestamp?: string; analysis?: unknown }[];
+    const contracts = (resContracts.data?.contracts || []) as ContractItem[];
     setHistory(contracts);
     setIsGoogleConnected(resGoogle.data.connected || false);
     setUserPicture(resGoogle.data.picture_url || null);
