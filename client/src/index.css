@@ -1125,7 +1125,12 @@ body:has(.landing),
     text-align: center;
   }
 
-  .home-hero-title,
+  .home-hero-title {
+    text-align: left;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
   .home-hero-sub {
     margin-left: auto !important;
     margin-right: auto !important;
