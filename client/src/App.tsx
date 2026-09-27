@@ -295,7 +295,11 @@ function App() {
         throw new Error('Upload did not return a contract.');
       }
       const created = await waitForAnalyzedContract(createdId);
-      await loadUserData();
+      try {
+        await loadUserData();
+      } catch {
+        // The contract is already saved. A failed refresh should not look like a failed upload.
+      }
       const details = safeParse(created.analysis);
       setSelectedAnalysis(details.summary && details.summary !== 'N/A' ? details.summary : details.conclusion || 'No summary.');
       showToast('Contract added to your vault', 'success');

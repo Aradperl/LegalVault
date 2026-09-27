@@ -21,6 +21,7 @@ class FolderUpdate(BaseModel):
     contract_ids: Optional[List[str]] = None
 
 
+@router.get("")
 @router.get("/")
 async def list_folders(current_user: str = Depends(get_current_user)):
     """List all custom folders for a user."""
@@ -34,6 +35,7 @@ async def list_folders(current_user: str = Depends(get_current_user)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("")
 @router.post("/")
 async def create_folder(body: FolderCreate, current_user: str = Depends(get_current_user)):
     """Create a new custom folder."""

@@ -143,6 +143,7 @@ async def upload_contract(
     return {"status": "pending", "contract_id": contract_id}
 
 
+@router.get("")
 @router.get("/")
 async def get_contracts(current_user: str = Depends(get_current_user)):
     res = contracts_table.query(KeyConditionExpression=Key("user_id").eq(current_user))
