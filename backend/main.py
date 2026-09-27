@@ -3,7 +3,7 @@ import os
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
-from config import CORS_ORIGINS, s3_client, contracts_table, users_table
+from config import CORS_ORIGIN_REGEX, CORS_ORIGINS, s3_client, contracts_table, users_table
 from models import ReminderUpdate
 from deps import get_current_user
 from routers import auth, contracts, google_auth, folders
@@ -19,8 +19,9 @@ app = FastAPI(title="LegalVault API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
+    allow_origin_regex=CORS_ORIGIN_REGEX,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 

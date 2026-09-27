@@ -65,8 +65,18 @@ def _write_analysis(user_id: str, contract_id: str, payload: dict) -> None:
     )
 
 
-async def _finish_analysis(user_id: str, contract_id: str, text: str) -> None:
+async def _finish_analysis(user_id: str, contract_id: str, file_bytes: bytes) -> None:
     try:
+        try:
+            text = await asyncio.to_thread(_extract_pdf_text, file_bytes)
+        except Exception:
+            await asyncio.to_thread(
+                _write_analysis,
+                user_id,
+                contract_id,
+                {"status": "error", "error": "Could not read that PDF. Try another file."},
+            )
+            return
         analysis = await asyncio.to_thread(call_openai_analysis, text)
         await asyncio.to_thread(_write_analysis, user_id, contract_id, analysis)
         try:
@@ -124,17 +134,12 @@ async def upload_contract(
         raise HTTPException(status_code=400, detail="That PDF is empty.")
 
     try:
-        text = await asyncio.to_thread(_extract_pdf_text, file_bytes)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Could not read that PDF. Try another file.")
-
-    try:
         contract_id = await asyncio.to_thread(_store_pending, user_id, filename, file_bytes, bucket)
     except Exception as e:
         logger.exception("Contract upload failed")
         raise HTTPException(status_code=500, detail=str(e) or "Upload failed.") from e
 
-    asyncio.create_task(_finish_analysis(user_id, contract_id, text))
+    asyncio.create_task(_finish_analysis(user_id, contract_id, file_bytes))
     return {"status": "pending", "contract_id": contract_id}
 
 

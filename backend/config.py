@@ -20,6 +20,9 @@ logger = logging.getLogger("legalvault")
 
 INSECURE_JWT_DEFAULT = "change-me-in-production-use-long-secret"
 LOCAL_DEV_ORIGINS = ("http://localhost:5173", "http://127.0.0.1:5173")
+KNOWN_RAILWAY_FRONTEND = "https://frontend-production-4e4c.up.railway.app"
+# Covers this project's Railway frontend even if FRONTEND_URL is missing.
+CORS_ORIGIN_REGEX = r"https://[a-z0-9-]+\.up\.railway\.app"
 LOCAL_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
 
 
@@ -61,6 +64,7 @@ def _require_production_jwt_secret() -> str:
 def get_cors_origins() -> list[str]:
     """FRONTEND_URL + CORS_ORIGINS + local Vite. Never returns *."""
     origins: set[str] = set(LOCAL_DEV_ORIGINS)
+    origins.add(KNOWN_RAILWAY_FRONTEND)
     if FRONTEND_URL:
         origins.add(FRONTEND_URL)
     for part in (os.getenv("CORS_ORIGINS") or "").split(","):
