@@ -135,7 +135,6 @@ JWT_SECRET=...   # required in production; local fallback only if FRONTEND_URL i
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
 FRONTEND_URL=http://localhost:5173
-AUTO_VERIFY_EMAIL=true   # local/dev only — skip email verification until SES is wired
 ```
 
 ### 3. AWS
@@ -198,7 +197,7 @@ contract_manager/
 
 | Area | Endpoints |
 |------|-----------|
-| **Auth** | `POST /signup`, `POST /login` (returns JWT), `GET /verify-email?token=...`. Protected routes require `Authorization: Bearer <token>`. |
+| **Auth** | `POST /signup`, `POST /login` (returns JWT). Protected routes require `Authorization: Bearer <token>`. |
 | **Contracts** | `POST /upload`, `GET /contracts`, `GET /view/{id}/pdf`, `DELETE /contracts/{id}` (all require JWT) |
 | **Folders** | `GET/POST/DELETE /folders` (see backend) |
 | **Google** | `GET /auth/google`, `GET /auth/callback`, `GET /check-google-connection`, `POST /update-reminder` |
@@ -217,7 +216,7 @@ contract_manager/
 
 - Do not commit `.env`. Use env vars for all secrets.
 - The backend **refuses to start** if `JWT_SECRET` is missing or still `change-me-in-production-use-long-secret` when `ENVIRONMENT=production` or `FRONTEND_URL` is not localhost. CORS allows only `FRONTEND_URL`, optional `CORS_ORIGINS`, and `http://localhost:5173` — never `*`.
-- **Signup rules** (enforced on the API): username trimmed, min 3 chars, `[A-Za-z0-9_-]`; valid email; password min 10 chars with a letter and a number; obvious passwords rejected. New accounts are `verified=false` until they open `GET /verify-email?token=...`. Existing users without a `verified` attribute can still log in. Locally use `AUTO_VERIFY_EMAIL=true` to skip mail. Production sends the link via **Amazon SES** when `SES_FROM_EMAIL` is set.
+- **Signup rules** (enforced on the API): username trimmed, min 3 chars, `[A-Za-z0-9_-]`; valid email; password min 10 chars with a letter and a number; obvious passwords rejected. New accounts can sign in immediately (no email verification — this is a public demo).
 
 ### Railway (backend service)
 
@@ -227,8 +226,6 @@ contract_manager/
 | `FRONTEND_URL` | `https://frontend-production-4e4c.up.railway.app` |
 | `CORS_ORIGINS` | Optional comma-separated extra origins if you have more than one frontend |
 | `ENVIRONMENT` | `production` |
-| `AUTO_VERIFY_EMAIL` | Leave unset/false so new signups must verify email |
-| `SES_FROM_EMAIL` | A SES-verified address, e.g. `noreply@yourdomain.com` |
 
 ---
 

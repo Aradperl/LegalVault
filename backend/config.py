@@ -17,8 +17,6 @@ logger = logging.getLogger("legalvault")
 #   FRONTEND_URL        https://frontend-production-4e4c.up.railway.app
 #   CORS_ORIGINS        optional comma-separated extra origins (do not use *)
 #   ENVIRONMENT         production
-#   AUTO_VERIFY_EMAIL   true only for local/dev; leave unset/false on Railway
-#   SES_FROM_EMAIL      verified SES identity used as the From address
 
 INSECURE_JWT_DEFAULT = "change-me-in-production-use-long-secret"
 LOCAL_DEV_ORIGINS = ("http://localhost:5173", "http://127.0.0.1:5173")
@@ -39,11 +37,6 @@ def _normalize_origin(url: str) -> str:
 
 FRONTEND_URL = _normalize_origin(os.getenv("FRONTEND_URL", ""))
 ENVIRONMENT = (os.getenv("ENVIRONMENT") or "").strip().lower()
-AUTO_VERIFY_EMAIL = (os.getenv("AUTO_VERIFY_EMAIL") or "").strip().lower() in {
-    "1",
-    "true",
-    "yes",
-}
 
 # Local-dev JWT fallback is allowed only when FRONTEND_URL's host is localhost.
 IS_LOCALHOST = _hostname(FRONTEND_URL) in LOCAL_HOSTS
