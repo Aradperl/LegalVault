@@ -103,7 +103,7 @@ export function HomePage() {
                 <li key={c.contract_id} style={{ borderTop: i === 0 ? 'none' : `1px solid ${C.slate}` }}>
                   <Link
                     to="/contracts"
-                    className="row-link"
+                    className="row-link home-contract-row"
                     style={{
                       display: 'grid',
                       gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 2fr) auto',

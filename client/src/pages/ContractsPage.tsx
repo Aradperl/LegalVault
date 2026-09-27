@@ -191,8 +191,9 @@ export function ContractsPage() {
     <>
       <CompactUploadBar loading={loading} error={uploadError} onUpload={handleUpload} onFileDrop={handleUploadFile} />
 
-      <div style={filterBarStyle}>
+      <div className="contracts-filter" style={filterBarStyle}>
         <Input
+          className="contracts-search"
           type="text"
           placeholder="Search by party, subject or file name"
           value={searchTerm}

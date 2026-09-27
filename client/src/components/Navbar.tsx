@@ -48,23 +48,23 @@ const googleStatusStyle: React.CSSProperties = {
 };
 
 export const Navbar: React.FC<NavbarProps> = ({ isGoogleConnected, userPicture, currentUser, onGoogleConnect }) => (
-  <nav style={navbarStyle}>
-    <div style={logoStyle}>
+  <nav className="app-navbar" style={navbarStyle}>
+    <div className="app-logo" style={logoStyle}>
       <img className="logo-mark" src="/logo-mark.png" alt="" width={38} height={33} />
-      <span style={wordmarkStyle}>LEGALVAULT</span>
+      <span className="logo-wordmark" style={wordmarkStyle}>LEGALVAULT</span>
     </div>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+    <div className="app-navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
       {isGoogleConnected ? (
-        <span style={googleStatusStyle}>
+        <span className="nav-google" style={googleStatusStyle}>
           <span style={{ width: 7, height: 7, borderRadius: '50%', background: C.emerald }} aria-hidden />
           Google Calendar connected
         </span>
       ) : (
-        <Button appearance="outline" onClick={onGoogleConnect}>
+        <Button className="nav-google" appearance="outline" onClick={onGoogleConnect}>
           Connect Google Calendar
         </Button>
       )}
-      <span style={{ width: 1, height: 24, background: C.slate }} />
+      <span className="nav-google-rule" style={{ width: 1, height: 24, background: C.slate }} />
       <ThemeToggle />
       <Avatar
         name={currentUser}
