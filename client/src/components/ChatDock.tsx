@@ -47,7 +47,7 @@ export function ChatDock() {
   const dockRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setShowHint(false), 4200);
+    const timer = window.setTimeout(() => setShowHint(false), 4600);
     return () => window.clearTimeout(timer);
   }, []);
 
@@ -244,7 +244,7 @@ export function ChatDock() {
       )}
 
       {showHint && !open && (
-        <p className="chat-dock-hint" role="status">Chat about your contracts</p>
+        <p className="chat-dock-hint" role="status">Talk with your contracts</p>
       )}
 
       <button
@@ -253,7 +253,7 @@ export function ChatDock() {
         className={`chat-dock-toggle${open ? ' is-open' : ''}`}
         aria-expanded={open}
         aria-haspopup="dialog"
-        aria-label={open ? 'Close chat' : 'Ask about your contracts'}
+        aria-label={open ? 'Close chat' : 'Talk with your contracts'}
         onClick={() => (open ? close() : setOpen(true))}
       >
         <MessageCircle size={22} strokeWidth={2} aria-hidden />
