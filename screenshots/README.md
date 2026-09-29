@@ -1,16 +1,12 @@
-# Screenshots for README
+# Screenshots
 
-Place these image files here so they appear in the main README (no need to run the app to show the project):
+These files are embedded in the root README.
 
-| File | What to capture |
-|------|------------------|
-| `home.png` | Home page: hero, upload area, quick overview, recent contracts |
-| `contracts.png` | Contracts page: folder chips, contract cards grid |
-| `analytics.png` | Analytics page: stats, charts, upcoming payments |
-| `login.png` | Login / Sign up screen: form, welcome copy, buttons |
-| `settings.png` | Settings page: account info, default reminder, Logout |
-| `about.png` | About page: product info, AWS & services, developer section |
-| `analyzed-contract.png` | A single contract card: badge, party, summary, dates, Not signed/red flags, actions |
-| `google-calendar.png` | Google Calendar view showing a contract expiration reminder event (e.g. “Contract expires in 7 days” or similar) |
-
-Use **PNG** or **JPG**. File names must match exactly (e.g. `analyzed-contract.png`, `google-calendar.png`).
+| File | What it shows |
+|------|----------------|
+| `home.png` | Home after sign-in: greeting, drop area, vault totals, recent contracts |
+| `contracts.png` | Contracts page: upload bar, folders, contract cards |
+| `insights.png` | Contract insights dialog |
+| `chat.png` | Ask panel, grounded in the saved analyses |
+| `analytics.png` | Analytics: exposure, upcoming payments, risk, flagged terms |
+| `login.jpg` | Sign-in page with the contract specimen |
